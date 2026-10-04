@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+import { writeFileSync } from 'node:fs';
+
+export function buildMascotSvg() {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
   <defs>
     <!-- Filters -->
     <filter id="soft-ground-blur" x="-20%" y="-20%" width="140%" height="140%">
@@ -460,3 +463,8 @@
     </g>
   </g>
 </svg>
+`;
+}
+
+writeFileSync('assets/mascot.svg', buildMascotSvg(), 'utf8');
+console.log('Successfully generated assets/mascot.svg (pure vector)');
