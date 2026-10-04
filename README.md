@@ -23,6 +23,9 @@
   <b><a href="#quick-start">Quick Start</a> · <a href="#why-op-lead-with-us">Why</a> · <a href="#roles">Roles</a> · <a href="#architecture">Architecture</a> · <a href="#license">License</a></b>
 </p>
 
+<p align="center">
+  <img src="assets/1.png" width="100%" alt="op-lead-with-us">
+</p>
 ---
 
 <a name="english"></a>
