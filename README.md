@@ -24,7 +24,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/1.png" width="100%" alt="op-lead-with-us">
+  <img src="assets/1.png" width="50%" alt="op-lead-with-us">
 </p>
 ---
 
