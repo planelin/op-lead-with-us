@@ -39,8 +39,8 @@ export function packagePlugin() {
   const outputsDir = join(projectRoot, 'outputs');
   mkdirSync(outputsDir, { recursive: true });
 
-  const zipFile = join(outputsDir, `opus-staff-${version}.zip`);
-  const shaFile = join(outputsDir, `opus-staff-${version}.sha256.txt`);
+  const zipFile = join(outputsDir, `op-lead-with-us-${version}.zip`);
+  const shaFile = join(outputsDir, `op-lead-with-us-${version}.sha256.txt`);
 
   // 使用 PowerShell Compress-Archive 进行零依赖原生压缩
   const psCmd = `Compress-Archive -Path '${stagedDir}\\*' -DestinationPath '${zipFile}' -Force`;

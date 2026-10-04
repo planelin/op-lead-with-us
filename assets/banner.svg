@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="100%" height="420">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070A12"/>
+      <stop offset="50%" stop-color="#0B0F19"/>
+      <stop offset="100%" stop-color="#0D1527"/>
+    </linearGradient>
+
+    <!-- Text & Glow Gradients -->
+    <linearGradient id="text-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="40%" stop-color="#E2E8F0"/>
+      <stop offset="70%" stop-color="#C084FC"/>
+      <stop offset="100%" stop-color="#38BDF8"/>
+    </linearGradient>
+
+    <linearGradient id="accent-cyan-purple" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A855F7"/>
+      <stop offset="50%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#34D399"/>
+    </linearGradient>
+
+    <linearGradient id="octo-body" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="60%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#0369A1"/>
+    </linearGradient>
+    <linearGradient id="mask-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="50%" stop-color="#E2E8F0"/>
+      <stop offset="100%" stop-color="#94A3B8"/>
+    </linearGradient>
+    <linearGradient id="accent-purple" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#C084FC"/>
+      <stop offset="100%" stop-color="#818CF8"/>
+    </linearGradient>
+
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="soft-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="30" result="blur"/>
+    </filter>
+  </defs>
+
+  <!-- Deep Obsidian Background -->
+  <rect width="1200" height="420" rx="16" fill="url(#bg-grad)"/>
+
+  <!-- Ambient Light Orbs -->
+  <circle cx="240" cy="210" r="180" fill="#0284C7" opacity="0.12" filter="url(#soft-glow)"/>
+  <circle cx="850" cy="160" r="220" fill="#9333EA" opacity="0.10" filter="url(#soft-glow)"/>
+  <circle cx="1050" cy="300" r="160" fill="#0EA5E9" opacity="0.08" filter="url(#soft-glow)"/>
+
+  <!-- Subtle Grid Lines -->
+  <g opacity="0.06" stroke="#FFFFFF" stroke-width="1">
+    <line x1="0" y1="70" x2="1200" y2="70"/>
+    <line x1="0" y1="140" x2="1200" y2="140"/>
+    <line x1="0" y1="210" x2="1200" y2="210"/>
+    <line x1="0" y1="280" x2="1200" y2="280"/>
+    <line x1="0" y1="350" x2="1200" y2="350"/>
+    <line x1="200" y1="0" x2="200" y2="420"/>
+    <line x1="500" y1="0" x2="500" y2="420"/>
+    <line x1="800" y1="0" x2="800" y2="420"/>
+    <line x1="1100" y1="0" x2="1100" y2="420"/>
+  </g>
+
+  <!-- ==================== LEFT: MASCOT (OCTOPUS) ==================== -->
+  <g transform="translate(60, 60)">
+    <!-- Back Tentacles -->
+    <path d="M 90,180 C 60,195 40,230 65,255 C 85,275 115,245 105,220" fill="none" stroke="url(#octo-body)" stroke-width="20" stroke-linecap="round"/>
+    <path d="M 210,180 C 240,195 260,230 235,255 C 215,275 185,245 195,220" fill="none" stroke="url(#octo-body)" stroke-width="20" stroke-linecap="round"/>
+
+    <!-- Head / Body -->
+    <path d="M 85,150 C 70,80 110,40 150,40 C 190,40 230,80 215,150 C 210,180 185,195 150,195 C 115,195 90,180 85,150 Z" fill="url(#octo-body)"/>
+
+    <!-- Front Tentacles -->
+    <path d="M 110,185 C 80,215 90,265 125,260 C 150,255 145,215 130,200" fill="none" stroke="url(#octo-body)" stroke-width="18" stroke-linecap="round"/>
+    <path d="M 190,185 C 220,215 210,265 175,260 C 150,255 155,215 170,200" fill="none" stroke="url(#octo-body)" stroke-width="18" stroke-linecap="round"/>
+    <!-- Left Baton Tentacle -->
+    <path d="M 80,165 C 50,160 30,135 45,115 C 58,98 80,120 85,140" fill="none" stroke="url(#octo-body)" stroke-width="16" stroke-linecap="round"/>
+    <line x1="42" y1="112" x2="15" y2="75" stroke="#F8FAFC" stroke-width="3.5" stroke-linecap="round" filter="url(#glow)"/>
+    <circle cx="15" cy="75" r="4.5" fill="#38BDF8" filter="url(#glow)"/>
+
+    <!-- Right Tentacle holding code/notes -->
+    <path d="M 220,165 C 250,160 270,135 255,115 C 242,98 220,120 215,140" fill="none" stroke="url(#octo-body)" stroke-width="16" stroke-linecap="round"/>
+    <text x="262" y="105" font-family="monospace" font-size="20" font-weight="bold" fill="#38BDF8" filter="url(#glow)">{♪}</text>
+
+    <!-- Big Eyes -->
+    <ellipse cx="122" cy="130" rx="15" ry="17" fill="#0F172A"/>
+    <ellipse cx="178" cy="130" rx="15" ry="17" fill="#0F172A"/>
+    <circle cx="126" cy="125" r="6" fill="#FFFFFF"/>
+    <circle cx="120" cy="135" r="2.5" fill="#FFFFFF"/>
+    <circle cx="182" cy="125" r="6" fill="#FFFFFF"/>
+    <circle cx="176" cy="135" r="2.5" fill="#FFFFFF"/>
+
+    <!-- Masquerade Mask -->
+    <path d="M 92,126 C 100,105 125,108 140,118 C 145,122 155,122 160,118 C 175,108 200,105 208,126 C 215,145 195,154 180,146 C 165,138 135,138 120,146 C 105,154 85,145 92,126 Z" 
+          fill="url(#mask-grad)" stroke="#F8FAFC" stroke-width="2.5" filter="url(#glow)"/>
+    <ellipse cx="122" cy="128" rx="16" ry="11" fill="none" stroke="#64748B" stroke-width="1.5"/>
+    <ellipse cx="178" cy="128" rx="16" ry="11" fill="none" stroke="#64748B" stroke-width="1.5"/>
+    <path d="M 88,122 C 72,112 65,95 70,82 C 78,92 85,108 92,118 Z" fill="url(#accent-purple)"/>
+    <path d="M 86,128 C 68,128 58,118 60,102 C 70,110 80,120 88,126 Z" fill="url(#mask-grad)"/>
+    <polygon points="150,114 154,120 150,126 146,120" fill="#A855F7"/>
+
+    <!-- Blush / Smile -->
+    <ellipse cx="106" cy="155" rx="7" ry="4" fill="#38BDF8" opacity="0.4"/>
+    <ellipse cx="194" cy="155" rx="7" ry="4" fill="#38BDF8" opacity="0.4"/>
+    <path d="M 143,158 Q 150,165 157,158" fill="none" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- ==================== RIGHT: TYPOGRAPHY & IDENTITY ==================== -->
+  <g transform="translate(420, 80)">
+    <!-- Top Pill Badge -->
+    <rect x="0" y="0" width="280" height="28" rx="14" fill="#1E293B" stroke="#38BDF8" stroke-width="1.2" opacity="0.9"/>
+    <circle cx="16" cy="14" r="4.5" fill="#38BDF8" filter="url(#glow)"/>
+    <text x="30" y="19" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" letter-spacing="1.2" fill="#E2E8F0">
+      GOOGLE ANTIGRAVITY NATIVE
+    </text>
+
+    <!-- Main Project Name Heading -->
+    <text x="0" y="92" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="72" font-weight="900" letter-spacing="-1.5" fill="url(#text-grad)">
+      op-lead<tspan fill="url(#accent-cyan-purple)">-with-us</tspan>
+    </text>
+
+    <!-- Subtitle / Tagline -->
+    <text x="2" y="132" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="600" fill="#94A3B8">
+      Claude Opus 5.5 Plans <tspan fill="#64748B">·</tspan> Gemini 3.8 Flash Executes <tspan fill="#64748B">·</tspan> Zero Quota Anxiety
+    </text>
+
+    <!-- Minimalist Synth Keyboard & Wave Accent -->
+    <g transform="translate(0, 160)">
+      <!-- Keyboard Keys -->
+      <g fill="#F8FAFC" opacity="0.85">
+        <rect x="0" y="0" width="10" height="32" rx="2"/>
+        <rect x="13" y="0" width="10" height="32" rx="2"/>
+        <rect x="26" y="0" width="10" height="32" rx="2"/>
+        <rect x="39" y="0" width="10" height="32" rx="2"/>
+        <rect x="52" y="0" width="10" height="32" rx="2"/>
+        <rect x="65" y="0" width="10" height="32" rx="2"/>
+        <rect x="78" y="0" width="10" height="32" rx="2"/>
+        <!-- Black keys -->
+        <rect x="7" y="0" width="7" height="19" rx="1.5" fill="#0F172A"/>
+        <rect x="20" y="0" width="7" height="19" rx="1.5" fill="#0F172A"/>
+        <rect x="46" y="0" width="7" height="19" rx="1.5" fill="#0F172A"/>
+        <rect x="59" y="0" width="7" height="19" rx="1.5" fill="#0F172A"/>
+        <rect x="72" y="0" width="7" height="19" rx="1.5" fill="#0F172A"/>
+      </g>
+      <!-- Soundwave flowing from keys -->
+      <path d="M 95,16 Q 160,-15 230,16 T 370,16 T 510,16 T 650,16" fill="none" stroke="url(#accent-cyan-purple)" stroke-width="3" stroke-linecap="round" filter="url(#glow)"/>
+      <path d="M 95,16 Q 160,35 230,16 T 370,16 T 510,16 T 650,16" fill="none" stroke="#C084FC" stroke-width="1.5" stroke-dasharray="4,6" opacity="0.6"/>
+      <!-- Floating musical notes -->
+      <text x="245" y="2" font-size="16" fill="#38BDF8" filter="url(#glow)">♪</text>
+      <text x="395" y="30" font-size="14" fill="#C084FC" filter="url(#glow)">♫</text>
+      <text x="540" y="5" font-size="15" fill="#34D399" filter="url(#glow)">#</text>
+    </g>
+
+    <!-- Bottom Feature Badges / Highlights -->
+    <g transform="translate(0, 225)">
+      <!-- Badge 1 -->
+      <rect x="0" y="0" width="180" height="34" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+      <text x="14" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#38BDF8">
+        ⚡ 70%+ Opus Saved
+      </text>
+
+      <!-- Badge 2 -->
+      <rect x="195" y="0" width="200" height="34" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+      <text x="210" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#C084FC">
+        🔒 Pure Native Subagents
+      </text>
+
+      <!-- Badge 3 -->
+      <rect x="410" y="0" width="170" height="34" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+      <text x="424" y="22" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#34D399">
+        🚀 Zero External Setup
+      </text>
+    </g>
+  </g>
+</svg>

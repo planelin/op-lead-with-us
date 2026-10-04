@@ -7,25 +7,29 @@ import assert from 'node:assert/strict';
 import { projectRoot, packageFiles, validatePlugin, agentNames } from './validate.mjs';
 
 const hash = data => createHash('sha256').update(data).digest('hex');
-const marker = '.opus-staff-installed.json';
+const marker = '.op-lead-with-us-installed.json';
 
 const globalConfigDir = join(homedir(), '.gemini', 'config');
-const globalPluginDir = join(globalConfigDir, 'plugins', 'opus-staff');
+const globalPluginDir = join(globalConfigDir, 'plugins', 'op-lead-with-us');
+const legacyPluginDir = join(globalConfigDir, 'plugins', 'opus-staff');
 const globalAgentsDir = join(globalConfigDir, 'agents');
 
 function uninstall() {
-  console.log('--- Opus Staff 全局卸载 ---');
+  console.log('--- op-lead-with-us 全局卸载 ---');
   let removedAny = false;
 
-  if (existsSync(globalPluginDir)) {
-    console.log(`正在移除全局插件目录: ${globalPluginDir}`);
-    rmSync(globalPluginDir, { recursive: true, force: true });
-    removedAny = true;
+  for (const dir of [globalPluginDir, legacyPluginDir]) {
+    if (existsSync(dir)) {
+      console.log(`正在移除全局插件目录: ${dir}`);
+      rmSync(dir, { recursive: true, force: true });
+      removedAny = true;
+    }
   }
 
   // 检查并清理全局 agents 中的 lead 与 worker 副本
   if (existsSync(globalAgentsDir)) {
-    for (const name of agentNames) {
+    const candidateNames = [...agentNames, 'opus-staff-lead'];
+    for (const name of candidateNames) {
       const agentFile = join(globalAgentsDir, `${name}.md`);
       if (existsSync(agentFile)) {
         console.log(`正在移除全局 Agent: ${agentFile}`);
@@ -43,11 +47,22 @@ function uninstall() {
 }
 
 function install() {
-  console.log('--- Opus Staff 全局安装 ---');
+  console.log('--- op-lead-with-us 全局安装 ---');
   validatePlugin(projectRoot);
   console.log('PASS 静态配置校验通过');
 
-  // 1. 部署到 ~/.gemini/config/plugins/opus-staff
+  // 清理旧版 opus-staff 残留
+  if (existsSync(legacyPluginDir)) {
+    console.log(`清理旧版插件目录: ${legacyPluginDir}`);
+    rmSync(legacyPluginDir, { recursive: true, force: true });
+  }
+  const legacyLead = join(globalAgentsDir, 'opus-staff-lead.md');
+  if (existsSync(legacyLead)) {
+    console.log(`清理旧版 Lead Agent: ${legacyLead}`);
+    rmSync(legacyLead, { force: true });
+  }
+
+  // 1. 部署到 ~/.gemini/config/plugins/op-lead-with-us
   mkdirSync(globalPluginDir, { recursive: true });
   const fileHashes = {};
 
@@ -67,10 +82,10 @@ function install() {
   );
   console.log(`✅ 插件核心已安装至: ${globalPluginDir}`);
 
-  // 2. 将 opus-staff-lead 部署到 ~/.gemini/config/agents/，确保 Antigravity 主下拉框全局可见
+  // 2. 将 op-lead-with-us 部署到 ~/.gemini/config/agents/，确保 Antigravity 主下拉框全局可见
   mkdirSync(globalAgentsDir, { recursive: true });
-  const leadSrc = join(projectRoot, 'agents', 'opus-staff-lead.md');
-  const leadDest = join(globalAgentsDir, 'opus-staff-lead.md');
+  const leadSrc = join(projectRoot, 'agents', 'op-lead-with-us.md');
+  const leadDest = join(globalAgentsDir, 'op-lead-with-us.md');
   copyFileSync(leadSrc, leadDest);
   console.log(`✅ 主 Agent 已注册至全局 Agent 列表: ${leadDest}`);
 
@@ -79,10 +94,10 @@ function install() {
   console.log('PASS 全局副本静态校验通过');
 
   console.log('\n=========================================');
-  console.log('🎉 Opus Staff 全局安装成功！');
+  console.log('🎉 op-lead-with-us 全局安装成功！');
   console.log('使用方法：');
-  console.log('1. 重启或在 Antigravity 桌面端新建对话');
-  console.log('2. Agent 选择器选择: opus-staff-lead');
+  console.log('1. 重启或在 Antigravity 桌面端新建对话 (Ctrl+N)');
+  console.log('2. Agent 选择器选择: op-lead-with-us');
   console.log('3. 模型选择器选择: Claude Opus 5.5');
   console.log('4. 发送任务，Lead 将自动规划并委派 Flash 完成实现！');
   console.log('=========================================\n');

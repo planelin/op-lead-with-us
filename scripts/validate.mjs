@@ -4,12 +4,12 @@ import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 
 export const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-export const agentNames = ['opus-staff-lead', 'agy-researcher', 'agy-implementer', 'agy-reviewer'];
+export const agentNames = ['op-lead-with-us', 'agy-researcher', 'agy-implementer', 'agy-reviewer'];
 export const runtimeFiles = [
   'plugin.json',
   ...agentNames.map(name => `agents/${name}.md`),
-  'skills/opus-staff/SKILL.md',
-  'rules/opus-staff.md',
+  'skills/op-lead-with-us/SKILL.md',
+  'rules/op-lead-with-us.md',
 ];
 export const packageFiles = [...runtimeFiles, 'README.md', 'docs/SMOKE-TEST.md', 'docs/TASK-PACKET.md', 'docs/COMPATIBILITY.md', 'docs/TROUBLESHOOTING.md'];
 const verifiedTools = new Set(['view_file', 'grep_search', 'replace_file_content', 'run_command', 'invoke_subagent', 'manage_subagents', 'send_message']);
@@ -41,6 +41,8 @@ export function parseFrontmatter(source, label = 'Markdown') {
       listKey = key;
     } else if (raw === 'true' || raw === 'false') {
       metadata[key] = raw === 'true';
+    } else if (raw === 'startsWith') {
+      metadata[key] = raw;
     } else if (raw.startsWith('"')) {
       const value = JSON.parse(raw);
       assert.equal(typeof value, 'string', `${label}: expected quoted string`);
@@ -71,7 +73,7 @@ export function validatePlugin(root = projectRoot) {
   const manifest = JSON.parse(readFileSync(join(root, 'plugin.json'), 'utf8'));
   // Strict profile from the official docs: no speculative version/entrypoint fields.
   sameKeys(manifest, ['name', 'description'], 'plugin.json');
-  assert.equal(manifest.name, 'opus-staff');
+  assert.equal(manifest.name, 'op-lead-with-us');
   assert.match(manifest.name, /^[a-zA-Z0-9_-]+$/);
   assert.equal(typeof manifest.description, 'string');
   assert(manifest.description.length > 0);
@@ -80,7 +82,7 @@ export function validatePlugin(root = projectRoot) {
 
   for (const name of agentNames) {
     const { metadata: m, body } = parseFrontmatter(readFileSync(join(root, 'agents', `${name}.md`), 'utf8'), name);
-    const lead = name === 'opus-staff-lead';
+    const lead = name === 'op-lead-with-us';
     sameKeys(m, ['name', 'description', 'mainAgent', 'subagent', 'model', 'commandExecutionPolicy', 'tools'], name);
     assert.equal(m.name, name);
     assert.equal(typeof m.description, 'string');
@@ -108,15 +110,15 @@ export function validatePlugin(root = projectRoot) {
     checks.push(`agent: ${name} (${m.model}; main=${m.mainAgent}; subagent=${m.subagent})`);
   }
 
-  const skill = parseFrontmatter(readFileSync(join(root, 'skills/opus-staff/SKILL.md'), 'utf8'), 'skill');
+  const skill = parseFrontmatter(readFileSync(join(root, 'skills/op-lead-with-us/SKILL.md'), 'utf8'), 'skill');
   sameKeys(skill.metadata, ['name', 'description'], 'skill');
-  assert.equal(skill.metadata.name, 'opus-staff');
+  assert.equal(skill.metadata.name, 'op-lead-with-us');
   assert.equal(typeof skill.metadata.description, 'string');
   for (const name of agentNames) assert(skill.body.includes(name), `Skill missing ${name}`);
   checks.push('skill: metadata and all role references');
 
-  assert.deepEqual(markdownNames(join(root, 'rules')), ['opus-staff.md']);
-  const rulePath = join(root, 'rules/opus-staff.md');
+  assert.deepEqual(markdownNames(join(root, 'rules')), ['op-lead-with-us.md']);
+  const rulePath = join(root, 'rules/op-lead-with-us.md');
   const rule = parseFrontmatter(readFileSync(rulePath, 'utf8'), 'rule');
   sameKeys(rule.metadata, ['trigger', 'description'], 'rule');
   assert.equal(rule.metadata.trigger, 'always_on');

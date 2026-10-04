@@ -1,6 +1,6 @@
-# Opus Staff — 中文快速上手指南
+# op-lead-with-us — 中文快速上手指南
 
-欢迎使用 **Opus Staff**！这是一个专为 Google Antigravity 设计的原生多模型协作插件。
+欢迎使用 **op-lead-with-us**！这是一个专为 Google Antigravity 设计的原生多模型协作插件。
 
 其核心目标是：**在 Antigravity 桌面端内，用 Claude Opus 5.5 做主架构师负责顶层思考与验收，将耗费大量 Token 的繁重实现、调研与测试全面委派给极速、低成本的 Gemini Flash，从而成倍节省 Opus 配额。**
 
@@ -10,7 +10,7 @@
 
 | 角色 | 对应 Agent 文件 | 运行模型 | 核心职责 |
 | :--- | :--- | :--- | :--- |
-| **主架构师 (Lead)** | `opus-staff-lead` | **Claude Opus 5.5** (`inherit`) | 需求理解、任务拆解、制定任务包、最终验收与交付。不亲自写琐碎代码。 |
+| **主架构师 (Lead)** | `op-lead-with-us` | **Claude Opus 5.5** (`inherit`) | 需求理解、任务拆解、制定任务包、最终验收与交付。不亲自写琐碎代码。 |
 | **调研员 (Researcher)** | `agy-researcher` | **Gemini Flash** (`flash`) | 快速检索代码库、定位关键接口与依赖约束。纯只读权限，不修改代码。 |
 | **执行员 (Implementer)** | `agy-implementer` | **Gemini Flash** (`flash`) | 依据任务包进行代码编写、文件替换、执行本地测试，最多 2 轮自主纠错。 |
 | **审查员 (Reviewer)** | `agy-reviewer` | **Gemini Flash** (`flash`) | 独立审查 Git 变更与实现证据，核对逻辑漏洞与安全风险，提出最小修复建议。 |
@@ -22,7 +22,7 @@
 ### 方式 A：当前项目内即用（推荐快速体验）
 本项目已通过 Staging 机制在当前工作区生成了插件镜像：
 ```text
-.agents/plugins/opus-staff/
+.agents/plugins/op-lead-with-us/
 ```
 只需在 Antigravity 桌面端中，**“打开文件夹”选择当前项目目录**，即可直接在本项目中生效。
 
@@ -31,7 +31,7 @@
 ```powershell
 npm run install:global
 ```
-该命令会自动将插件同步至系统全局配置目录 `~/.gemini/config/plugins/opus-staff`，并将主 Agent 注册到 `~/.gemini/config/agents/`。之后你在 Antigravity 打开**任何项目或新建任何对话**，都能直接选用 `opus-staff-lead`！
+该命令会自动将插件同步至系统全局配置目录 `~/.gemini/config/plugins/op-lead-with-us`，并将主 Agent 注册到 `~/.gemini/config/agents/op-lead-with-us.md`。之后你在 Antigravity 打开**任何项目或新建任何对话**，都能直接选用 `op-lead-with-us`！
 
 *(若需卸载全局安装，只需运行 `npm run uninstall:global`)*
 
@@ -43,7 +43,7 @@ npm run install:global
    在 Antigravity 左侧侧边栏点击 **New Conversation**（或快捷键 `Ctrl+N`）。
 
 2. **选择角色与模型**：
-   - 在主 Agent 下拉框中，选择 **`opus-staff-lead`**。
+   - 在主 Agent 下拉框中，选择 **`op-lead-with-us`**。
    - 在模型下拉框中，选择你账号可用的 **Claude Opus 5.5**。
 
 3. **发送任务**：

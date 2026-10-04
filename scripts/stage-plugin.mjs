@@ -35,7 +35,7 @@ function walkFiles(root, prefix = '') {
 export function stagePlugin(root = projectRoot) {
   root = resolve(root);
   validatePlugin(root);
-  const target = join(root, '.agents', 'plugins', 'opus-staff');
+  const target = join(root, '.agents', 'plugins', 'op-lead-with-us');
   guardPath(root, target);
   const targetMarker = join(target, marker);
   const prior = existsSync(targetMarker) ? JSON.parse(readFileSync(targetMarker, 'utf8')) : null;

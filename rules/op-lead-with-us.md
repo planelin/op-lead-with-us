@@ -1,12 +1,12 @@
 ---
 trigger: always_on
-description: "仅在 opus-staff 角色或技能启用时约束模型路由、委派、安全和测试证据；不接管普通对话。"
+description: "仅在 op-lead-with-us 角色或技能启用时约束模型路由、委派、安全和测试证据；不接管普通对话。"
 ---
 
-# Opus Staff invariants
+# OP Lead With Us invariants
 
-These constraints apply only when `opus-staff-lead`, an `agy-*` worker from this
-plugin, or the `opus-staff` skill is active. Otherwise do not alter the conversation.
+These constraints apply only when `op-lead-with-us`, an `agy-*` worker from this
+plugin, or the `op-lead-with-us` skill is active. Otherwise do not alter the conversation.
 
 - The lead is primary-only and inherits the manually selected main model. Research,
   implementation and review use the three explicit Flash workers, never `self`,

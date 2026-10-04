@@ -8,7 +8,7 @@ import { stagePlugin } from '../scripts/stage-plugin.mjs';
 
 // Intentionally no recursive deletion. Small, unique test fixtures are left in OS temp.
 function fixture() {
-  const root = mkdtempSync(join(tmpdir(), 'opus-staff-test-'));
+  const root = mkdtempSync(join(tmpdir(), 'op-lead-test-'));
   for (const file of packageFiles) {
     mkdirSync(dirname(join(root, file)), { recursive: true });
     copyFileSync(join(projectRoot, file), join(root, file));
@@ -40,7 +40,7 @@ test('worker must not inherit expensive main model', () => {
 });
 test('lead must not be callable as a subagent', () => {
   const root = fixture();
-  rewrite(root, 'agents/opus-staff-lead.md', s => s.replace('subagent: false', 'subagent: true'));
+  rewrite(root, 'agents/op-lead-with-us.md', s => s.replace('subagent: false', 'subagent: true'));
   assert.throws(() => validatePlugin(root), /wrong delegation flag/);
 });
 test('unknown tool names are rejected', () => {
@@ -55,12 +55,12 @@ test('researcher cannot acquire shell access', () => {
 });
 test('invalid rule trigger is rejected', () => {
   const root = fixture();
-  rewrite(root, 'rules/opus-staff.md', s => s.replace('trigger: always_on', 'trigger: alwaysOn'));
+  rewrite(root, 'rules/op-lead-with-us.md', s => s.replace('trigger: always_on', 'trigger: alwaysOn'));
   assert.throws(() => validatePlugin(root));
 });
 test('rule without frontmatter is rejected', () => {
   const root = fixture();
-  rewrite(root, 'rules/opus-staff.md', s => s.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, ''));
+  rewrite(root, 'rules/op-lead-with-us.md', s => s.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, ''));
   assert.throws(() => validatePlugin(root), /missing frontmatter/);
 });
 test('unsafe shell auto-execution policy is rejected', () => {
@@ -103,22 +103,22 @@ test('stage rejects unexpected assets without deleting them', () => {
 });
 
 test('lead has explicit native delegation and lifecycle tools', () => {
-  const { metadata } = parseFrontmatter(readFileSync(join(projectRoot, 'agents/opus-staff-lead.md'), 'utf8'));
+  const { metadata } = parseFrontmatter(readFileSync(join(projectRoot, 'agents/op-lead-with-us.md'), 'utf8'));
   assert.deepEqual(metadata.tools, ['view_file', 'grep_search', 'invoke_subagent', 'manage_subagents', 'send_message']);
 });
 test('lead missing invoke_subagent is rejected', () => {
   const root = fixture();
-  rewrite(root, 'agents/opus-staff-lead.md', s => s.replace('  - invoke_subagent\n', ''));
+  rewrite(root, 'agents/op-lead-with-us.md', s => s.replace('  - invoke_subagent\n', ''));
   assert.throws(() => validatePlugin(root), /Lead must explicitly request/);
 });
 test('lead missing lifecycle management is rejected', () => {
   const root = fixture();
-  rewrite(root, 'agents/opus-staff-lead.md', s => s.replace('  - manage_subagents\n', ''));
+  rewrite(root, 'agents/op-lead-with-us.md', s => s.replace('  - manage_subagents\n', ''));
   assert.throws(() => validatePlugin(root), /Lead must explicitly request/);
 });
 test('lead cannot regress to implicit default tools', () => {
   const root = fixture();
-  rewrite(root, 'agents/opus-staff-lead.md', s => s.replace(/tools:\n(?:  - [a-z_]+\n)+/, ''));
+  rewrite(root, 'agents/op-lead-with-us.md', s => s.replace(/tools:\n(?:  - [a-z_]+\n)+/, ''));
   assert.throws(() => validatePlugin(root), /unsupported or missing keys/);
 });
 test('worker cannot gain native delegation tools', () => {
@@ -128,6 +128,6 @@ test('worker cannot gain native delegation tools', () => {
 });
 test('lead cannot gain shell tools as implementation fallback', () => {
   const root = fixture();
-  rewrite(root, 'agents/opus-staff-lead.md', s => s.replace('  - send_message', '  - send_message\n  - run_command'));
+  rewrite(root, 'agents/op-lead-with-us.md', s => s.replace('  - send_message', '  - send_message\n  - run_command'));
   assert.throws(() => validatePlugin(root), /Lead must explicitly request/);
 });

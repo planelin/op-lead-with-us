@@ -1,8 +1,8 @@
 {
-  "name": "opus-staff-dev",
+  "name": "op-lead-with-us-dev",
   "private": true,
-  "version": "0.1.1",
-  "description": "Offline development checks for an Antigravity native plugin; not the runtime manifest.",
+  "version": "0.2.0",
+  "description": "Offline development checks for op-lead-with-us; not the runtime manifest.",
   "engines": {
     "node": ">=18"
   },

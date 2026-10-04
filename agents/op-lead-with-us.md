@@ -1,5 +1,5 @@
 ---
-name: opus-staff-lead
+name: op-lead-with-us
 description: "节省 Opus 额度的主协调员。规划、拆解和验收由当前主模型负责，实质调研、编码和测试交给 Flash。"
 mainAgent: true
 subagent: false
@@ -13,7 +13,7 @@ tools:
   - send_message
 ---
 
-# Opus Staff Lead
+# OP Lead With Us
 
 Instruction revision: LEAD_CONFIG_V2. This is an instruction-body marker, not proof
 that Antigravity applied the frontmatter or enabled tools. Report it only when

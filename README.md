@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.jpg" width="100%" alt="op-lead-with-us">
+  <img src="assets/banner.svg" width="100%" alt="op-lead-with-us">
 </p>
 
 <p align="center">
@@ -47,7 +47,7 @@ This plugin establishes an automated division of labor directly inside Antigravi
 
 | Persona | Identifier | Model | Permissions & Scope |
 | :--- | :--- | :--- | :--- |
-| **Lead Architect** | `opus-staff-lead` | **Claude Opus 5.5** (`inherit`) | High-level planning, task breakdown, evidence evaluation, acceptance. No routine file edits. |
+| **Lead Architect** | `op-lead-with-us` | **Claude Opus 5.5** (`inherit`) | High-level planning, task breakdown, evidence evaluation, acceptance. No routine file edits. |
 | **Researcher** | `agy-researcher` | **Gemini Flash** (`flash`) | Read-only codebase reconnaissance, dependency mapping, finding interfaces. No code edits. |
 | **Implementer** | `agy-implementer` | **Gemini Flash** (`flash`) | Code editing, file replacement, test command execution. Max 2 self-repair cycles. |
 | **Reviewer** | `agy-reviewer` | **Gemini Flash** (`flash`) | Independent audit of git diffs and test logs against acceptance criteria. No writes. |
@@ -62,6 +62,7 @@ This plugin establishes an automated division of labor directly inside Antigravi
                               ▼
            ┌─────────────────────────────────────┐
            │      Claude Opus 5.5 (Lead)         │
+           │         op-lead-with-us             │
            │  Architecture, Plan, Task Packet    │
            └──────────────────┬──────────────────┘
                               │ invoke_subagent
@@ -92,7 +93,7 @@ npm run install:global
 
 1. Open or restart **Antigravity 2.0+**.
 2. Start a **New Conversation** (`Ctrl+N`).
-3. Select **`opus-staff-lead`** in the Agent selector.
+3. Select **`op-lead-with-us`** in the Agent selector.
 4. Select **`Claude Opus 5.5`** in the Model selector.
 5. Send your coding request.
 
@@ -119,7 +120,7 @@ npm run package    # Generate release ZIP with SHA256 checksum
 
 **`op-lead-with-us`** 是专为 **Google Antigravity** 设计的原生多模型协作插件。
 
-让 **Claude Opus 5.5** 负责高阶系统架构、需求拆解与最终验收，将繁重的高 Token 消耗操作（文件检索、代码修改、单元测试）交由毫秒级极速响应的 **Gemini 3.8 Flash** 子 Agent 执行。
+让 **Claude Opus 5.5** 负责高阶系统架构、需求拆解与最终验收，将繁重的高 Token 消耗操作（文件检索、代码修改、单元测试）交由毫秒级极速响应的 **Gemini 3.8 Flash** 子 Agent 执行。吉祥物为一只佩戴银色假面的智慧蓝章鱼，象征以多爪多线程从容调度多模型。
 
 ### 为什么选择它？
 
@@ -129,7 +130,7 @@ npm run package    # Generate release ZIP with SHA256 checksum
 
 ### 角色分工
 
-* **`opus-staff-lead` (Opus 5.5)**：主架构师。拆解任务包，监督执行，最终验收，不亲自敲碎代码。
+* **`op-lead-with-us` (Opus 5.5)**：主架构师。拆解任务包，监督执行，最终验收，不亲自敲碎代码。
 * **`agy-researcher` (Gemini Flash)**：只读调研员。毫秒级探查接口与现有架构，严禁修改文件。
 * **`agy-implementer` (Gemini Flash)**：执行员。负责文件编写、替换并运行本地测试命令，限定 2 轮自主修复上限。
 * **`agy-reviewer` (Gemini Flash)**：独立审查员。核对变更 Diff 与测试证据，杜绝越权修改。
@@ -144,7 +145,7 @@ npm run install:global
 
 # 2. 在 Antigravity 桌面端
 # - 新建会话 (Ctrl+N)
-# - Agent 选择器选择: opus-staff-lead
+# - Agent 选择器选择: op-lead-with-us
 # - 模型选择器选择: Claude Opus 5.5
 # - 开始对话！
 ```

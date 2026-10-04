@@ -1,9 +1,9 @@
 ---
-name: opus-staff
-description: "在 Antigravity 内用 Opus 规划、Flash 调研/实现/审查的原生协作流程。用户要求节省 Opus 额度、委派实现或使用 opus-staff 时使用。"
+name: op-lead-with-us
+description: "在 Antigravity 内用 Opus 规划、Flash 调研/实现/审查的原生协作流程。用户要求节省 Opus 额度、委派实现或使用 op-lead-with-us 时使用。"
 ---
 
-# Opus Staff
+# OP Lead With Us
 
 Keep all coordination and workers inside Antigravity. This skill orchestrates
 installed custom agents; it does not provide a model API, quota extension or CLI.
@@ -11,11 +11,11 @@ installed custom agents; it does not provide a model API, quota extension or CLI
 ## Activation
 
 1. The user selects their available Opus model in the main conversation. Prefer
-   `opus-staff-lead` as the primary agent. This skill cannot switch the UI model.
+   `op-lead-with-us` as the primary agent. This skill cannot switch the UI model.
 2. Confirm the installed worker definitions are available under their registered
    identifiers: `agy-researcher`, `agy-implementer`, `agy-reviewer`, all `flash`.
 3. If invoked in a default main agent, apply this workflow to that main agent. Do
-   NOT call `opus-staff-lead` as a subagent: it is primary-only. If invoked inside
+   NOT call `op-lead-with-us` as a subagent: it is primary-only. If invoked inside
    a worker, obey the worker's task packet instead of orchestrating more agents.
 4. Missing definitions, delegation tools, or Flash access are blockers; explain
    them. Do not silently use `self`, `inherit`, `pro`, another model, or an external

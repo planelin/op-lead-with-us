@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="100%" height="300">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="octo-body" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="60%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#0369A1"/>
+    </linearGradient>
+    <linearGradient id="mask-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="50%" stop-color="#E2E8F0"/>
+      <stop offset="100%" stop-color="#94A3B8"/>
+    </linearGradient>
+    <linearGradient id="accent-purple" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#C084FC"/>
+      <stop offset="100%" stop-color="#818CF8"/>
+    </linearGradient>
+    <filter id="octo-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="neon-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Ambient Glow -->
+  <circle cx="150" cy="150" r="110" fill="#38BDF8" opacity="0.15" filter="url(#octo-glow)"/>
+  <circle cx="150" cy="150" r="80" fill="#818CF8" opacity="0.1" filter="url(#octo-glow)"/>
+
+  <!-- Back Tentacles -->
+  <path d="M 90,180 C 60,195 40,230 65,255 C 85,275 115,245 105,220" fill="none" stroke="url(#octo-body)" stroke-width="20" stroke-linecap="round"/>
+  <path d="M 210,180 C 240,195 260,230 235,255 C 215,275 185,245 195,220" fill="none" stroke="url(#octo-body)" stroke-width="20" stroke-linecap="round"/>
+
+  <!-- Head / Body -->
+  <path d="M 85,150 C 70,80 110,40 150,40 C 190,40 230,80 215,150 C 210,180 185,195 150,195 C 115,195 90,180 85,150 Z" fill="url(#octo-body)"/>
+
+  <!-- Front Tentacles -->
+  <path d="M 110,185 C 80,215 90,265 125,260 C 150,255 145,215 130,200" fill="none" stroke="url(#octo-body)" stroke-width="18" stroke-linecap="round"/>
+  <path d="M 190,185 C 220,215 210,265 175,260 C 150,255 155,215 170,200" fill="none" stroke="url(#octo-body)" stroke-width="18" stroke-linecap="round"/>
+  <!-- Conductor Baton Tentacle -->
+  <path d="M 80,165 C 50,160 30,135 45,115 C 58,98 80,120 85,140" fill="none" stroke="url(#octo-body)" stroke-width="16" stroke-linecap="round"/>
+  <!-- Mini Conductor Wand -->
+  <line x1="42" y1="112" x2="15" y2="75" stroke="#F8FAFC" stroke-width="3.5" stroke-linecap="round" filter="url(#neon-glow)"/>
+  <circle cx="15" cy="75" r="4.5" fill="#38BDF8" filter="url(#neon-glow)"/>
+
+  <!-- Code / Music Tentacle -->
+  <path d="M 220,165 C 250,160 270,135 255,115 C 242,98 220,120 215,140" fill="none" stroke="url(#octo-body)" stroke-width="16" stroke-linecap="round"/>
+  <!-- Floating musical note / code -->
+  <text x="265" y="105" font-family="monospace" font-size="20" font-weight="bold" fill="#38BDF8" filter="url(#neon-glow)">{♪}</text>
+
+  <!-- Big Smart Eyes -->
+  <ellipse cx="122" cy="130" rx="15" ry="17" fill="#0F172A"/>
+  <ellipse cx="178" cy="130" rx="15" ry="17" fill="#0F172A"/>
+  <!-- Eye sparkles -->
+  <circle cx="126" cy="125" r="6" fill="#FFFFFF"/>
+  <circle cx="120" cy="135" r="2.5" fill="#FFFFFF"/>
+  <circle cx="182" cy="125" r="6" fill="#FFFFFF"/>
+  <circle cx="176" cy="135" r="2.5" fill="#FFFFFF"/>
+
+  <!-- Sleek Masquerade Half-Mask -->
+  <path d="M 92,126 C 100,105 125,108 140,118 C 145,122 155,122 160,118 C 175,108 200,105 208,126 C 215,145 195,154 180,146 C 165,138 135,138 120,146 C 105,154 85,145 92,126 Z" 
+        fill="url(#mask-grad)" stroke="#F8FAFC" stroke-width="2.5" filter="url(#neon-glow)"/>
+  <!-- Left Eye Cutout in Mask -->
+  <ellipse cx="122" cy="128" rx="16" ry="11" fill="none" stroke="#64748B" stroke-width="1.5"/>
+  <!-- Right Eye Cutout in Mask -->
+  <ellipse cx="178" cy="128" rx="16" ry="11" fill="none" stroke="#64748B" stroke-width="1.5"/>
+  <!-- Mask Feather / Wing detail on side -->
+  <path d="M 88,122 C 72,112 65,95 70,82 C 78,92 85,108 92,118 Z" fill="url(#accent-purple)"/>
+  <path d="M 86,128 C 68,128 58,118 60,102 C 70,110 80,120 88,126 Z" fill="url(#mask-grad)"/>
+  <!-- Mask Center Jewel -->
+  <polygon points="150,114 154,120 150,126 146,120" fill="#A855F7"/>
+
+  <!-- Cute Blush / Smile -->
+  <ellipse cx="106" cy="155" rx="7" ry="4" fill="#38BDF8" opacity="0.4"/>
+  <ellipse cx="194" cy="155" rx="7" ry="4" fill="#38BDF8" opacity="0.4"/>
+  <path d="M 143,158 Q 150,165 157,158" fill="none" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
