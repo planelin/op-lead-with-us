@@ -12,7 +12,7 @@
 
 这能支持“该会话缺少委派工具”，但不能单独证明：
 
-1. 主 Agent 选择器实际选中了 opus-staff-lead；
+1. 主 Agent 选择器实际选中了 op-lead-with-us；
 2. 插件 agents/ 内容已成功注册；
 3. Opus 一概不支持委派；
 4. 需要修改账户权限或升级软件。
@@ -52,7 +52,7 @@ tools:
 ## 第一阶段：不创建子 Agent 的检查
 
 1. 确认正在打开本项目，并结束本次诊断所用旧对话；无须删除对话。
-2. 新建对话，在主 Agent 下拉框**实际选择 opus-staff-lead**，而不是仅输入 /opus-staff。
+2. 新建对话，在主 Agent 下拉框**实际选择 op-lead-with-us**，而不是仅输入 /op-lead-with-us。
    若选项根本不存在，停止发模型请求，直接报告“选择器里没有 Lead”。
 3. 保持待测试的主模型不变，发送：
 
@@ -92,7 +92,7 @@ LEAD_TOOLCHECK。不要调用任何工具，不读文件，不创建子会话，
 ## 来源与证据
 
 - 用户回传的 ROUTING_SMOKE_TEST 结果。
-- 本工作区 agents/opus-staff-lead.md 的 0.1.0 内容与 0.1.1 定向变更。
+- 本工作区 agents/op-lead-with-us.md 的变更与显式工具配置。
 - https://antigravity.google/docs/subagents/
 - https://antigravity.google/docs/hooks/ （Agent collaboration 工具目录）
 - https://antigravity.google/docs/changelog/ （2026-09-18 的 v2.15.0 说明可定制默认工具）

@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { projectRoot, packageFiles, validatePlugin } from './validate.mjs';
 
 const hash = data => createHash('sha256').update(data).digest('hex');
-const marker = '.opus-staff-stage.json';
+const marker = '.op-lead-with-us-stage.json';
 
 function guardPath(root, target) {
   const rel = relative(root, target);

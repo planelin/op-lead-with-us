@@ -12,7 +12,7 @@ function computeSha256(filePath) {
 }
 
 export function packagePlugin() {
-  console.log('--- Opus Staff 打包流水线 ---');
+  console.log('--- op-lead-with-us 打包流水线 ---');
   
   // 1. 静态验证
   console.log('[1/4] 运行静态规则与格式校验...');

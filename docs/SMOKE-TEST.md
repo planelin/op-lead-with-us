@@ -2,8 +2,8 @@
 
 ## 0. 安装与发现（不消耗模型请求）
 
-在工作区生成 `.agents/plugins/opus-staff/` 后，用 Antigravity 2.15.1 打开本项目并新建对话。
-确认 `opus-staff-lead` 可以作主 Agent；三个 worker 是子 Agent，不应作为主 Agent 选项。
+在工作区生成 `.agents/plugins/op-lead-with-us/` 后，用 Antigravity 2.15.1 打开本项目并新建对话。
+确认 `op-lead-with-us` 可以作主 Agent；三个 worker 是子 Agent，不应作为主 Agent 选项。
 如 UI 不单独列出 worker，以主 Agent 可用的原生委派工具是否发现它们为准。
 
 仅查看不到列表还不能证明“不支持”；但工具明确缺失时必须停止，不能改用 `self`。
@@ -17,14 +17,14 @@ LEAD_TOOLCHECK，确认新 Lead 已选择且真实具备委派工具，再运行
 
 ## 1. 最小只读路由测试（一次 researcher）
 
-选主 Agent `opus-staff-lead`，手工选择你可用的 Opus 模型。发送 README 中的
-`ROUTING_SMOKE_TEST` 提示。预期仅读取 manifest，并返回 `opus-staff`。
+选主 Agent `op-lead-with-us`，手工选择你可用的 Opus 模型。发送 README 中的
+`ROUTING_SMOKE_TEST` 提示。预期仅读取 manifest，并返回 `op-lead-with-us`。
 
 验收记录：
 
 | 项目 | 预期 | 实测 |
 | --- | --- | --- |
-| 主 Agent / 主模型 | opus-staff-lead / 用户所选 Opus | 待填 |
+| 主 Agent / 主模型 | op-lead-with-us / 用户所选 Opus | 待填 |
 | 子 Agent | agy-researcher（可能带插件命名空间） | 待填 |
 | 子会话实际模型 | App 或工具元数据确认的 Flash 档模型 | 待填 |
 | 子会话数量 | 1 | 待填 |
@@ -38,11 +38,11 @@ LEAD_TOOLCHECK，确认新 Lead 已选择且真实具备委派工具，再运行
 ## 2. 端到端小型任务
 
 仅在路由测试成功后执行；会使用额度。不要让测试修改真实业务代码。
-先确认 `work/opus-staff-smoke/` 不存在；存在则选择一个新的空目录，不清空它。
+先确认 `work/op-lead-with-us-smoke/` 不存在；存在则选择一个新的空目录，不清空它。
 把下列提示中的“绝对项目目录”换成你实际项目路径：
 
 ```text
-使用 opus-staff。在“绝对项目目录/work/opus-staff-smoke”实现一个零依赖 Node ESM 小例子。
+使用 op-lead-with-us。在“绝对项目目录/work/op-lead-with-us-smoke”实现一个零依赖 Node ESM 小例子。
 目录必须是新目录，存在则停止询问；禁止修改该目录外的文件。
 创建 clamp.mjs，导出 clamp(value, min, max)。三个参数必须是有限数字；
 非数字、NaN、Infinity、-Infinity 抛 TypeError；min > max 抛 RangeError；
