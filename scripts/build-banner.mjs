@@ -1,11 +1,18 @@
 import { readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { buildMascotSvg } from './build-mascot-svg.mjs';
 
-const mascotPath = join('assets', 'mascot.jpg');
-const mascotBase64 = readFileSync(mascotPath).toString('base64');
-const dataUri = `data:image/jpeg;base64,${mascotBase64}`;
+export function buildBannerSvg() {
+  const mascotSvg = buildMascotSvg();
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" width="100%" height="440">
+  // Extract <defs> from mascotSvg
+  const defsMatch = /<defs>([\s\S]*?)<\/defs>/.exec(mascotSvg);
+  const mascotDefs = defsMatch ? defsMatch[1] : '';
+
+  // Extract graphics elements from mascotSvg (everything between </defs> and </svg>, excluding the background rect)
+  const bodyMatch = /<\/defs>[\s\S]*?<rect width="800" height="800" fill="#F8FAFC" rx="16"\/>([\s\S]*?)<\/svg>/.exec(mascotSvg);
+  const mascotBody = bodyMatch ? bodyMatch[1] : '';
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" width="100%" height="440">
   <defs>
     <!-- Background Gradient -->
     <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -36,10 +43,13 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" widt
       <feGaussianBlur stdDeviation="40" result="blur"/>
     </filter>
 
-    <!-- Circular clip for mascot -->
-    <clipPath id="mascot-clip">
-      <circle cx="220" cy="220" r="162"/>
+    <!-- Circular clip for mascot frame -->
+    <clipPath id="mascot-frame-clip">
+      <circle cx="220" cy="220" r="160"/>
     </clipPath>
+
+    <!-- Injected Vector Mascot Definitions -->
+    ${mascotDefs}
   </defs>
 
   <!-- Deep Obsidian Background -->
@@ -60,22 +70,25 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" widt
     <line x1="1020" y1="0" x2="1020" y2="440"/>
   </g>
 
-  <!-- ==================== LEFT: MASCOT ==================== -->
+  <!-- ==================== LEFT: PURE VECTOR SVG MASCOT ==================== -->
   <g>
     <!-- Outer Glow Ring -->
     <circle cx="220" cy="220" r="170" fill="none" stroke="url(#accent-cyan-purple)" stroke-width="2.5" opacity="0.8" filter="url(#glow)"/>
     <circle cx="220" cy="220" r="176" fill="none" stroke="#38BDF8" stroke-width="1" opacity="0.4" stroke-dasharray="6,6"/>
-    
-    <!-- Mascot Image Clamped in Circle -->
-    <g clip-path="url(#mascot-clip)">
-      <image href="${dataUri}" x="50" y="50" width="340" height="340" preserveAspectRatio="xMidYMid meet"/>
+
+    <!-- Circular Backdrop for Mascot -->
+    <circle cx="220" cy="220" r="160" fill="#0C1222"/>
+
+    <!-- Inlined Pure Vector Mascot Graphic (Centered at 220, 220) -->
+    <g transform="translate(45, 45) scale(0.4375)" clip-path="url(#mascot-frame-clip-off)">
+      ${mascotBody}
     </g>
 
     <!-- Star Ornaments on Ring -->
     <polygon points="220,40 223,47 230,50 223,53 220,60 217,53 210,50 217,47" fill="#38BDF8" filter="url(#glow)"/>
-    <polygon points="220,380 223,387 230,390 223,393 220,400 217,393 210,390 217,387" fill="#A855F7" filter="url(#glow)"/>
-    <polygon points="42,220 49,223 52,230 55,223 62,220 55,217 52,210 49,217" fill="#C084FC"/>
-    <polygon points="398,220 405,223 408,230 411,223 418,220 411,217 408,210 405,217" fill="#38BDF8"/>
+    <polygon points="220,400 223,407 230,410 223,413 220,420 217,413 210,410 217,407" fill="#A855F7" filter="url(#glow)"/>
+    <polygon points="40,220 47,223 50,230 53,223 60,220 53,217 50,210 47,217" fill="#C084FC"/>
+    <polygon points="400,220 407,223 410,230 413,223 420,220 413,217 410,210 407,217" fill="#38BDF8"/>
   </g>
 
   <!-- ==================== RIGHT: TYPOGRAPHY ==================== -->
@@ -144,5 +157,10 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" widt
 </svg>
 `;
 
-writeFileSync('assets/banner.svg', svg, 'utf8');
-console.log('Successfully built assets/banner.svg with mascot!');
+  writeFileSync('assets/banner.svg', svg, 'utf8');
+  console.log('Successfully built assets/banner.svg with PURE VECTOR mascot!');
+}
+
+if (process.argv[1] && process.argv[1].includes('build-banner')) {
+  buildBannerSvg();
+}
