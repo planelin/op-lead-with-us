@@ -1,174 +1,156 @@
 <p align="center">
-  <img src="assets/band_banner.jpg" width="100%" alt="op-lead-with-us Banner">
-</p>
-
-<h1 align="center">🎭 op-lead-with-us</h1>
-
-<p align="center">
-  <b>"Oblivious to token anxiety — Opus conducts the score, while Flash plays the storm."</b><br>
-  <em>A native multi-model theatrical band plugin for Google Antigravity.</em>
+  <img src="assets/banner.jpg" width="100%" alt="op-lead-with-us">
 </p>
 
 <p align="center">
-  <a href="#-overview">English</a> | <a href="#-中文详细指南">简体中文</a>
+  <a href="#english">English</a> | <a href="#-简体中文">简体中文</a>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Platform-Google%20Antigravity%202.0+-4285F4?style=for-the-badge&logo=google" alt="Platform">
-  <img src="https://img.shields.io/badge/Maestro-Claude%20Opus%205.5-D97706?style=for-the-badge&logo=anthropic" alt="Maestro">
-  <img src="https://img.shields.io/badge/Ensemble-Gemini%203.8%20Flash-34A853?style=for-the-badge&logo=google" alt="Ensemble">
-  <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="License">
-  <img src="https://img.shields.io/badge/Dependencies-Zero%20External-7C3AED?style=for-the-badge" alt="Zero External Deps">
+  <a href="https://antigravity.google"><img src="https://img.shields.io/badge/platform-Google%20Antigravity-4285F4?style=flat-square&logo=google" alt="Antigravity"></a>
+  <img src="https://img.shields.io/badge/lead-Claude%20Opus%205.5-D97706?style=flat-square&logo=anthropic" alt="Claude Opus">
+  <img src="https://img.shields.io/badge/workers-Gemini%203.8%20Flash-34A853?style=flat-square&logo=google" alt="Gemini Flash">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License"></a>
+  <img src="https://img.shields.io/badge/dependencies-zero%20external-7C3AED?style=flat-square" alt="Zero Dependencies">
+</p>
+
+<p align="center">
+  <b>Hire Gemini Flash as staff for Claude Opus 5.5 — natively inside Google Antigravity.</b><br>
+  Opus plans, guides, and accepts. Flash explores, writes, and tests. Zero external CLI or proxies required.
+</p>
+
+<p align="center">
+  <b><a href="#quick-start">Quick Start</a> · <a href="#why-op-lead-with-us">Why</a> · <a href="#roles">Roles</a> · <a href="#architecture">Architecture</a> · <a href="#license">License</a></b>
 </p>
 
 ---
 
-<p align="center">
-  <img src="assets/band_logo.jpg" width="180" alt="Emblem Logo">
-</p>
+<a name="english"></a>
+## What & Why
 
-## 📖 Overview
+**`op-lead-with-us`** is an Antigravity-native multi-model orchestration plugin.
 
-**`op-lead-with-us`** (pronounced *ob-liv-ious*, an homage to **Oblivionis** from *BanG Dream! Ave Mujica*) is an open-source, native multi-model orchestration plugin built exclusively for **Google Antigravity**.
+Claude Opus 5.5 provides exceptional reasoning and system architecture skills, but consuming expensive Opus quota on repetitive repository exploration, continuous editing, and running unit tests is inefficient.
 
-In real-world software engineering with LLMs, senior models like **Claude Opus 5.5** provide unmatched reasoning, architectural vision, and code taste — but burning scarce Opus quota on tedious repository scans, file writes, and trial-and-error test runs is an immense waste.
+This plugin establishes an automated division of labor directly inside Antigravity:
+* **Claude Opus 5.5 (Lead)** acts as the lead architect (`model: inherit`). It frames requirements, generates task packets, reviews findings, and makes final acceptance decisions.
+* **Gemini 3.8 Flash (Workers)** operate as background subagents (`model: flash`). They handle repository search, file modifications, test commands, and independent sanity reviews.
 
-**`op-lead-with-us`** transforms your Antigravity IDE into a symphonic masquerade band:
-* **The Maestro (Claude Opus 5.5)** stands at the center, defining specifications, breaking down tasks, and conducting the movement.
-* **The Ensemble (Gemini 3.8 Flash)** shreds through files, explores dependencies, edits code, and executes test suites at lightning speed in background subagent sessions.
-* **Result**: **60%–80% Opus quota saved**, zero context pollution, and pure native execution without third-party proxies or external CLI bridges.
+**Core Benefits:**
+* **Save 60%–80% Opus Quota**: Heavy token operations are offloaded to Flash.
+* **Zero External Dependencies**: Pure Antigravity native (`invoke_subagent`). No Node server, no Claude Code CLI, no external proxies.
+* **Context Preservation**: Test logs and file dumps remain isolated in worker subagent sessions.
 
 ---
 
-## 🎸 The Band Lineup (Role Architecture)
+## Roles
+
+| Persona | Identifier | Model | Permissions & Scope |
+| :--- | :--- | :--- | :--- |
+| **Lead Architect** | `opus-staff-lead` | **Claude Opus 5.5** (`inherit`) | High-level planning, task breakdown, evidence evaluation, acceptance. No routine file edits. |
+| **Researcher** | `agy-researcher` | **Gemini Flash** (`flash`) | Read-only codebase reconnaissance, dependency mapping, finding interfaces. No code edits. |
+| **Implementer** | `agy-implementer` | **Gemini Flash** (`flash`) | Code editing, file replacement, test command execution. Max 2 self-repair cycles. |
+| **Reviewer** | `agy-reviewer` | **Gemini Flash** (`flash`) | Independent audit of git diffs and test logs against acceptance criteria. No writes. |
+
+---
+
+## Architecture
 
 ```
-                       [ 👤 User Request ]
-                                │
-                                ▼
-         ┌──────────────────────────────────────────────┐
-         │       🎹 Maestro (Claude Opus 5.5)           │
-         │           opus-staff-lead                    │
-         │  Architectural Planning & Final Acceptance   │
-         └──────────────────────┬───────────────────────┘
-                                │
-          Native Subagent Invocations (invoke_subagent)
-                                │
-       ┌────────────────────────┼────────────────────────┐
-       ▼                        ▼                        ▼
- 🔍 Synthesizer Scout      ⚡ Lead Shredder         🛡️ Bass & Mastering
-   (Gemini Flash)           (Gemini Flash)           (Gemini Flash)
-   agy-researcher          agy-implementer           agy-reviewer
- ──────────────────       ──────────────────       ──────────────────
- • Read-only discovery    • Code editing & diff    • Independent audit
- • AST & test analysis    • Automated test runs    • Regression check
- • Zero code writes       • 2 repair cycles max    • No writes allowed
+                       [ User Prompt ]
+                              │
+                              ▼
+           ┌─────────────────────────────────────┐
+           │      Claude Opus 5.5 (Lead)         │
+           │  Architecture, Plan, Task Packet    │
+           └──────────────────┬──────────────────┘
+                              │ invoke_subagent
+         ┌────────────────────┼────────────────────┐
+         ▼                    ▼                    ▼
+  [ agy-researcher ]   [ agy-implementer ]   [ agy-reviewer ]
+   (Gemini Flash)       (Gemini Flash)       (Gemini Flash)
+   Read-only survey     Code edits & tests   Independent audit
 ```
 
-| Band Position | Agent Identifier | Model Tier | Persona & Responsibility |
-| :--- | :--- | :--- | :--- |
-| **🎹 Maestro & Keyboards** | `opus-staff-lead` | **Claude Opus 5.5**<br>(`inherit`) | **The Composer (Oblivionis)**. Formulates task packets, holds architectural veto power, accepts deliverables. Never performs routine edits directly. |
-| **🔍 Synthesizer & Scout** | `agy-researcher` | **Gemini Flash**<br>(`flash`) | **Frequency Reconnaissance**. Deep read-only repository sweeps. Pinpoints interfaces and test runners with zero side-effects. |
-| **⚡ Lead Guitar & Drums** | `agy-implementer` | **Gemini Flash**<br>(`flash`) | **Rhythm & Heavy Lifting**. Rapid code writing, file replacement, and test suite execution. Bounded by a strict 2-cycle auto-repair budget. |
-| **🛡️ Bass & Mastering** | `agy-reviewer` | **Gemini Flash**<br>(`flash`) | **Sound Engineering & Audit**. Independent verification of git diffs and test logs against the original specification. Completely isolated from the implementer. |
-
 ---
 
-## ⚡ Why `op-lead-with-us`?
+## Quick Start
 
-| Metric | All-in Claude Opus 5.5 | External CLI / Proxy Bridges | **🎭 `op-lead-with-us`** |
-| :--- | :--- | :--- | :--- |
-| **Opus Quota Consumption** | 🚨 Exhausted within hours | ⚠️ Moderate | **⚡ 70%+ Saved (Only high-level decisions)** |
-| **Execution Velocity** | 🐢 Slow (Heavy reasoning lag) | ⚠️ Inter-process delay | **🚀 Blazing fast (Flash sub-second response)** |
-| **External Dependencies** | None | ❌ Requires Node, agy CLI, Python | **✅ Pure Antigravity Native (Zero setup)** |
-| **Security & Account Safety** | Official | ⚠️ Reverse-engineered proxies risk bans | **🔒 100% Native Google Sandbox & Official Auth** |
-| **Context Window Health** | 💥 Flooded with terminal logs | ⚠️ Segmented | **✨ Pristine (Worker logs isolated to subagents)** |
+### 1. Install Globally (Machine-Wide)
 
----
-
-## 🚀 Quick Start (Under 1 Minute)
-
-### 1. Global Installation (Any Workspace)
-Clone and install to your Antigravity global configuration directory in one command:
+Clone the repository and install it to your user configuration directory:
 
 ```powershell
-git clone https://github.com/your-username/antigravity-opus5-5-agy-opus-github.git
-cd antigravity-opus5-5-agy-opus-github
+git clone https://github.com/your-username/op-lead-with-us.git
+cd op-lead-with-us
 npm run install:global
 ```
 
-*(To uninstall globally later: `npm run uninstall:global`)*
+*(To uninstall: `npm run uninstall:global`)*
 
-### 2. Launch in Antigravity Desktop
+### 2. Run in Antigravity
+
 1. Open or restart **Antigravity 2.0+**.
-2. Start a **New Conversation** (`Ctrl + N`).
-3. In the **Primary Agent** dropdown, select: **`opus-staff-lead`**.
-4. In the **Model** dropdown, select: **`Claude Opus 5.5`**.
-5. Type your project request!
+2. Start a **New Conversation** (`Ctrl+N`).
+3. Select **`opus-staff-lead`** in the Agent selector.
+4. Select **`Claude Opus 5.5`** in the Model selector.
+5. Send your coding request.
 
-```text
-Prompt Example:
-"Build a multi-threaded file downloader with unit tests and a benchmark suite."
-```
-
-The Maestro will immediately plan the architecture, spawn the Flash ensemble in background sub-sessions, and present the final verified result.
+The Lead will automatically coordinate Gemini Flash subagents in the background.
 
 ---
 
-## 🇨🇳 简体中文详细指南
+## Verification & Tests
 
-### 🌟 名字的来历与设计哲学
-
-> **"op-lead-with-us"** 谐音 **Oblivionis**（同时包含 `OP` + `lead` + `with-us`，首尾拼合即为 `Opus`）。
-> 灵感源自《BanG Dream! It's MyGO!!!!! / Ave Mujica》中丰川祥子（Oblivionis）以坚定意志统御全局的假面乐团哲学。
-> 
-> 在大模型编程时代，每一个开发者都面临“顶级模型配额昂贵，轻量模型智力有限”的两难。
-> 本项目将这一困局化作一场各展所长的**假面交响演出**：
-> 让最高智力模型 **Claude Opus 5.5** 担当首席键盘手与指挥（Maestro），
-> 驱使 **Gemini 3.8 Flash** 充当极速弹奏的乐手（Ensemble），
-> 从而将耗费巨大 Token 的代码编写、文件搜索和单元测试全部转嫁至极速低成本的 Flash，
-> 实现 **“忘却一切算力焦虑，唯有架构与代码至上”**。
-
----
-
-### 📦 核心特性
-
-1. **纯原生零依赖**：不需要额外安装 Claude Code、Codex、agy CLI 或任何第三方 Proxy，完全基于 Google Antigravity 2.0+ 内建的 `Custom Agents` 与 `invoke_subagent`。
-2. **多模型真正协同**：在 Antigravity 底层实测证实，主会话为 `claude-opus-5-5`，子会话底层无缝路由至 `gemini-3.8-flash-tiered`。
-3. **严格权限隔离**：
-   - 调研员只有只读权限，绝不擅自篡改文件；
-   - 执行员限定 2 轮自主修复上限，防止死循环空耗；
-   - 审查员独立审计，杜绝“既当运动员又当裁判”。
-
----
-
-### 🛠️ 本地开发与回归测试
-
-本项目配备了完整的脱机测试与自动化流水线（无需联网）：
+The plugin includes an offline test suite validating schemas, model routing constraints, and staging safeguards:
 
 ```powershell
-# 1. 静态规则校验 (清单规范、模型路由、工具白名单)
-npm run validate
-
-# 2. 运行 21 项原生回归测试套件
-npm test
-
-# 3. 将本地代码改动同步至工作区插件副本
-npm run stage
-
-# 4. 生成包含 SHA256 校验的发行版压缩包 (outputs/opus-staff-*.zip)
-npm run package
+npm run validate   # Check manifest and agent declarations
+npm test           # Run 21 regression test cases
+npm run package    # Generate release ZIP with SHA256 checksum
 ```
 
 ---
 
-## 📜 License
+<a name="-简体中文"></a>
+## 🇨🇳 简体中文
 
-Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
+### 概述
+
+**`op-lead-with-us`** 是专为 **Google Antigravity** 设计的原生多模型协作插件。
+
+让 **Claude Opus 5.5** 负责高阶系统架构、需求拆解与最终验收，将繁重的高 Token 消耗操作（文件检索、代码修改、单元测试）交由毫秒级极速响应的 **Gemini 3.8 Flash** 子 Agent 执行。
+
+### 为什么选择它？
+
+* **大幅节省高阶算力**：将 70% 以上的代码读写与试错执行转嫁给 Flash。
+* **原生免配**：不依赖 Claude Code、Codex、agy CLI 或任何第三方网络代理，直接利用 Antigravity 官方子 Agent（`invoke_subagent`）机制。
+* **干净的上下文**：大量生成的代码和终端测试日志留在子会话中，主对话上下文始终保持精简。
+
+### 角色分工
+
+* **`opus-staff-lead` (Opus 5.5)**：主架构师。拆解任务包，监督执行，最终验收，不亲自敲碎代码。
+* **`agy-researcher` (Gemini Flash)**：只读调研员。毫秒级探查接口与现有架构，严禁修改文件。
+* **`agy-implementer` (Gemini Flash)**：执行员。负责文件编写、替换并运行本地测试命令，限定 2 轮自主修复上限。
+* **`agy-reviewer` (Gemini Flash)**：独立审查员。核对变更 Diff 与测试证据，杜绝越权修改。
+
+### 快速上手
+
+```powershell
+# 1. 全局安装
+git clone https://github.com/your-username/op-lead-with-us.git
+cd op-lead-with-us
+npm run install:global
+
+# 2. 在 Antigravity 桌面端
+# - 新建会话 (Ctrl+N)
+# - Agent 选择器选择: opus-staff-lead
+# - 模型选择器选择: Claude Opus 5.5
+# - 开始对话！
+```
 
 ---
 
-<p align="center">
-  <b>🎭 op-lead-with-us</b> — Crafted with passion for the Antigravity Community.<br>
-  <i>"Let the curtain rise, and the music play."</i>
-</p>
+## License
+
+Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
