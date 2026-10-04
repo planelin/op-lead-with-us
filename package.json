@@ -1,0 +1,17 @@
+{
+  "name": "opus-staff-dev",
+  "private": true,
+  "version": "0.1.1",
+  "description": "Offline development checks for an Antigravity native plugin; not the runtime manifest.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "validate": "node scripts/validate.mjs",
+    "test": "node --test tests/plugin.test.mjs",
+    "stage": "node scripts/stage-plugin.mjs",
+    "package": "node scripts/package.mjs",
+    "install:global": "node scripts/install-global.mjs",
+    "uninstall:global": "node scripts/install-global.mjs --uninstall"
+  }
+}
