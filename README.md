@@ -149,6 +149,14 @@ npm run install:global
 # - 模型选择器选择: Claude Opus 5.5
 # - 开始对话！
 ```
+---
+
+## 🤝 社区与友链
+
+本项目首发并活跃于 **[LINUX DO](https://linux.do)** 技术社区：
+- **论坛交流**：[LINUX DO (https://linux.do)](https://linux.do)
+- **社区探讨**：欢迎前往 LINUX DO 社区参与 Doloris 的长任务无人值守经验交流、架构探讨与 BYOP 自定义桌宠皮肤分享！
+- **社区精神**：*真诚、友善、团结、专业*，共建高品质技术社区。
 
 ---
 
