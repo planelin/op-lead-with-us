@@ -35,6 +35,13 @@ LEAD_TOOLCHECK，确认新 Lead 已选择且真实具备委派工具，再运行
 额度统计可能是聚合值或延迟更新。没有可信运行元数据时标记 UNVERIFIED，用户查看子会话后再确认。
 如果账号拿不到任何模型标识，先不要扩大任务；可由用户在明确知情下决定是否继续小规模试用。
 
+## 1.5 PLAN_ONLY 两阶段冒烟（可选）
+
+在 Opus 会话发送 `PLAN_ONLY：为 README 增加一个安装小节并保持原有语气`。
+预期：仅创建 `PLAN.md`（≤120 行）；至多一次 implementer 原文转写，不派 researcher/reviewer，不修改其他文件。
+然后新建 Gemini 3.8 Flash 会话发送 `Execute PLAN.md`，验证执行会话零 Opus 消耗、
+worker 回报不超过预算（researcher 40 / implementer 50 / reviewer 60 行）。
+
 ## 2. 端到端小型任务
 
 仅在路由测试成功后执行；会使用额度。不要让测试修改真实业务代码。

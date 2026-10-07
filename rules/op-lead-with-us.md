@@ -11,12 +11,22 @@ plugin, or the `op-lead-with-us` skill is active. Otherwise do not alter the con
 - The lead is primary-only and inherits the manually selected main model. Research,
   implementation and review use the three explicit Flash workers, never `self`,
   dynamic workers, nested leads, pro/inherit fallbacks, /boost, or /teamwork-preview.
+- Only two models participate: the manually selected main model (Claude Opus 5.5
+  for planning/acceptance, Gemini 3.8 Flash for simple/execution conversations)
+  and the `flash` workers. Never request `pro`, `flash_lite`, or another vendor.
 - Workers must not spawn agents. A missing worker, unavailable Flash or exhausted
   quota is a blocker, not permission to spend Opus on implementation.
 - Workers have isolated chat context: send complete bounded task packets. Preserve
   unrelated user edits and prevent overlapping writers. Default max concurrency: 2.
 - At most two repair cycles total after initial implementation, counting test and
   review fixes together. Replacement workers do not reset the budget.
+- Worker reports respect their line budgets; failing checks return a cause and a
+  short excerpt, never full logs. The lead accepts from evidence summaries and a
+  diff summary, not by re-reading full diffs or the repository.
+- PLAN_ONLY produces one compact PLAN.md via at most one implementer dispatch
+  that transcribes the lead's verbatim plan (or prints it for the user to save),
+  then stops. Execution happens in a new conversation whose main model is Gemini
+  3.8 Flash.
 - Never claim a test ran, a runtime model was verified, or quota was saved without
   evidence. Model self-identification and frontmatter alone do not verify routing.
 - No automatic commit, push, deployment, global settings changes, destructive actions,

@@ -37,9 +37,14 @@ This plugin establishes an automated division of labor directly inside Antigravi
 * **Gemini 3.8 Flash (Workers)** operate as background subagents (`model: flash`). They handle repository search, file modifications, test commands, and independent sanity reviews.
 
 **Core Benefits:**
-* **Save 60%–80% Opus Quota**: Heavy token operations are offloaded to Flash.
+* **Save Opus Quota**: Heavy token operations are offloaded to Flash; actual savings depend on the task mix.
 * **Zero External Dependencies**: Pure Antigravity native (`invoke_subagent`). No Node server, no Claude Code CLI, no external proxies.
 * **Context Preservation**: Test logs and file dumps remain isolated in worker subagent sessions.
+
+**Two-model policy & two-phase planning (v0.2.1):**
+* Session model is chosen in the Antigravity picker: **Claude Opus 5.5** for planning/acceptance conversations, **Gemini 3.8 Flash** for simple tasks and plan execution.
+* **Two-phase planning (`PLAN_ONLY`)**: an Opus conversation produces one compact `PLAN.md` (≤120 lines, transcribed by a single Flash implementer dispatch) and stops; a fresh Gemini 3.8 Flash conversation executes it with Flash workers. Opus never sees execution logs.
+* **Compressed evidence**: worker reports are capped (researcher 40 / implementer 50 / reviewer 60 lines); failing tests return a cause plus ≤15 output lines. Final acceptance uses the reviewer verdict, a diff summary, and test conclusions — never full re-reads.
 
 ---
 
@@ -94,7 +99,7 @@ npm run install:global
 1. Open or restart **Antigravity 2.0+**.
 2. Start a **New Conversation** (`Ctrl+N`).
 3. Select **`op-lead-with-us`** in the Agent selector.
-4. Select **`Claude Opus 5.5`** in the Model selector.
+4. Select **`Claude Opus 5.5`** (planning/acceptance) or **`Gemini 3.8 Flash`** (simple tasks / plan execution) in the Model selector.
 5. Send your coding request.
 
 The Lead will automatically coordinate Gemini Flash subagents in the background.
@@ -107,9 +112,28 @@ The plugin includes an offline test suite validating schemas, model routing cons
 
 ```powershell
 npm run validate   # Check manifest and agent declarations
-npm test           # Run 21 regression test cases
+npm test           # Run the regression test suite
 npm run package    # Generate release ZIP with SHA256 checksum
 ```
+
+---
+
+## FAQ
+
+* **Why Opus for planning and Flash for execution?**
+  Claude Opus 5.5 excels at high-level architecture and system reasoning, while routine codebase exploration, editing, and test execution consume heavy token quota. Offloading execution to Gemini 3.8 Flash preserves Opus quota while keeping responses fast.
+
+* **What should I do if subagents do not appear or `MISSING_INVOKE_TOOL` is reported?**
+  Start a new conversation (`Ctrl+N`) and explicitly pick `op-lead-with-us` from the Agent selector dropdown rather than typing `/op-lead-with-us`. If `invoke_subagent` is still missing from the injected schema, restart Antigravity 2.0+ or verify your global installation.
+
+* **How do I confirm workers really run on Gemini Flash?**
+  Worker configurations explicitly specify `model: flash`. However, because model self-identification in text is not proof of execution, routing status remains `UNVERIFIED` until runtime metadata or session logs confirm it.
+
+* **What is the `PLAN_ONLY` workflow?**
+  In an Opus conversation, send `PLAN_ONLY + task description`. The Lead produces a compact `PLAN.md` (≤120 lines transcribed verbatim by a single Flash implementer) and stops. You then open a fresh Gemini 3.8 Flash conversation and send `Execute PLAN.md`, ensuring execution logs never consume Opus quota.
+
+* **Does the plugin commit, push, or modify Git history automatically?**
+  No. All workers operate under strict boundaries with no automatic `git commit`, `git push`, deployment, or destructive operations. Any version control changes require explicit user authorization.
 
 ---
 
@@ -124,7 +148,9 @@ npm run package    # Generate release ZIP with SHA256 checksum
 
 ### 为什么选择它？
 
-* **大幅节省高阶算力**：将 70% 以上的代码读写与试错执行转嫁给 Flash。
+* **双模型策略（v0.2.1）**：复杂规划/验收选 Opus 5.5；简单任务与执行阶段选 Gemini 3.8 Flash。
+* **两阶段规划**：`PLAN_ONLY` 让 Opus 产出紧凑 PLAN.md（由一次 implementer 原文转写）；新开 Flash 会话 `Execute PLAN.md`，Opus 不看执行日志。
+* **压缩回报**：worker 回报限长（40/50/60 行），Lead 只依据摘要与 diff 摘要验收，重活大部分转嫁给 Flash。
 * **原生免配**：不依赖 Claude Code、Codex、agy CLI 或任何第三方网络代理，直接利用 Antigravity 官方子 Agent（`invoke_subagent`）机制。
 * **干净的上下文**：大量生成的代码和终端测试日志留在子会话中，主对话上下文始终保持精简。
 
@@ -149,6 +175,24 @@ npm run install:global
 # - 模型选择器选择: Claude Opus 5.5
 # - 开始对话！
 ```
+
+### 常见问题
+
+* **为什么采用 Opus 规划、Flash 执行的分工？**
+  Claude Opus 5.5 具备优秀的顶层架构与系统推理能力，但用于日常代码检索、文件编辑与测试执行极耗额度。将高 Token 消耗的执行任务交给极速响应的 Gemini 3.8 Flash，既能节省核心额度，又能大幅提升执行效率。
+
+* **子 Agent 未触发或提示 `MISSING_INVOKE_TOOL` 怎么办？**
+  请新建会话（`Ctrl+N`）并在 Antigravity 主界面的 Agent 下拉选择框中**显式选中 `op-lead-with-us`**（而非仅在输入框输入 `/op-lead-with-us`）。若仍缺少 `invoke_subagent` 工具，请重启 Antigravity 或重新运行全局安装。
+
+* **如何确认子任务确实运行在 Gemini Flash 上？**
+  子 Agent 配置均显式绑定 `model: flash`。但由于模型文本自述不可作为底层运行凭证，在客户端或会话元数据正式呈现运行模型前，路由状态均保持为 `UNVERIFIED`。
+
+* **什么是 `PLAN_ONLY` 两阶段工作流？**
+  在 Opus 会话中发送 `PLAN_ONLY + 任务描述`，Lead 仅产出一份紧凑的 `PLAN.md`（不超过 120 行，由一次 implementer 原文转写）即终止；随后新开 Gemini 3.8 Flash 会话发送 `Execute PLAN.md` 执行，彻底避免执行期终端日志消耗 Opus 额度。
+
+* **插件会自动提交（git commit）或推送（git push）代码吗？**
+  不会。所有角色均遵循严格的行为边界，严禁自动执行 `git commit`、`git push`、部署或任何破坏性操作，代码版本变更必须由用户明确授权。
+
 ---
 
 ## 🤝 社区与友链

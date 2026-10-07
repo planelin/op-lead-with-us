@@ -15,6 +15,19 @@
 | **执行员 (Implementer)** | `agy-implementer` | **Gemini Flash** (`flash`) | 依据任务包进行代码编写、文件替换、执行本地测试，最多 2 轮自主纠错。 |
 | **审查员 (Reviewer)** | `agy-reviewer` | **Gemini Flash** (`flash`) | 独立审查 Git 变更与实现证据，核对逻辑漏洞与安全风险，提出最小修复建议。 |
 
+### 会话级模型选择（只用两个模型）
+
+| 会话类型 | 主模型选择 | 说明 |
+| :--- | :--- | :--- |
+| 简单任务 / PLAN 执行 | **Gemini 3.8 Flash** | Lead 与 workers 全部走 Flash，Opus 消耗为 0 |
+| 复杂规划与验收 | **Claude Opus 5.5** | Opus 只做拆解与验收，重活全部 Flash |
+
+### 两阶段规划（最省 Opus）
+
+1. Opus 会话发送 `PLAN_ONLY + 任务描述`：Lead 产出 `PLAN.md`（≤120 行，由一次 implementer 按原文转写）后停止。
+2. 新建会话：Agent 仍选 `op-lead-with-us`，主模型选 **Gemini 3.8 Flash**。
+3. 发送 `Execute PLAN.md`：Flash workers 按计划调研/实现/审查，Lead 依据摘要验收。
+
 ---
 
 ## 🚀 安装部署（两种方式任选）
@@ -85,7 +98,7 @@ npm run install:global
 # 1. 运行静态规则与格式校验
 npm run validate
 
-# 2. 运行自动化回归测试套件 (21 项全通过)
+# 2. 运行自动化回归测试套件（全部通过）
 npm test
 
 # 3. 将源码改动同步更新到工作区插件目录

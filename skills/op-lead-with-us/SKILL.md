@@ -10,8 +10,9 @@ installed custom agents; it does not provide a model API, quota extension or CLI
 
 ## Activation
 
-1. The user selects their available Opus model in the main conversation. Prefer
-   `op-lead-with-us` as the primary agent. This skill cannot switch the UI model.
+1. The user selects the session model in the main conversation: Claude Opus 5.5
+   for planning/acceptance, Gemini 3.8 Flash for simple tasks and PLAN execution.
+   Prefer `op-lead-with-us` as the primary agent. This skill cannot switch models.
 2. Confirm the installed worker definitions are available under their registered
    identifiers: `agy-researcher`, `agy-implementer`, `agy-reviewer`, all `flash`.
 3. If invoked in a default main agent, apply this workflow to that main agent. Do
@@ -38,6 +39,9 @@ substitute sending to a manually created chat for the requested automation.
 ## Workflow
 
 - Define acceptance criteria with minimal lead exploration.
+- In PLAN_ONLY mode, produce one compact PLAN.md (max 120 lines) via a single
+  verbatim implementer dispatch, or print it for the user to save; execution
+  happens in a new conversation with main model Gemini 3.8 Flash.
 - Delegate uncertain repository questions to the read-only researcher; skip it
   for a fully specified small change.
 - Produce a short plan and a self-contained task packet. Workers start without
@@ -49,8 +53,10 @@ substitute sending to a manually created chat for the requested automation.
 - Have a separate reviewer inspect actual changes and evidence after writing stops.
 - At most two total repair cycles after initial implementation, including test and
   review fixes. Track `repair_cycles_used` across worker resumptions/replacements.
-- The lead accepts evidence and delivers results. It does not redo routine reading,
-  implementation, tests or repairs. Avoid repetitive polling and full-log reports.
+- The lead accepts from the reviewer verdict, implementer evidence, a diff summary
+  and test conclusions. It does not redo routine reading, implementation, tests,
+  repairs, or re-read full diffs/logs. Enforce report budgets: researcher 40 lines,
+  implementer 50, reviewer 60.
 
 ## First-use probe
 

@@ -14,6 +14,10 @@
   不宣称通过了在线 schema 或 Antigravity 官方加载器校验。
 - Subagents 文档列出 mainAgent、subagent、model、commandExecutionPolicy、tools 等字段。
   已文档化的 model 值为 inherit、flash、pro。未使用未经证实的具体 Opus 模型 ID。
+- 2026-10-06 实测：`flash` worker 子会话 gen_metadata 为 gemini-3.8-flash-tiered；
+  `inherit` 子代理继承主会话模型。本机 2.15.1 语言服务器校验字符串显示子代理
+  Model 仅支持 inherit/flash/flash_lite/pro，无 Opus 档；Opus 只能作为主会话模型。
+  因此 v0.2.1 固化双模型策略，不使用其他档位。
 - `view_file`、`grep_search`、`run_command`、`replace_file_content` 都有官方文档示例支持。
   0.1.0 的 Lead 省略 tools，实测会话未获得委派工具，原先依赖默认工具集的假设未成立。
   0.1.1 显式请求 invoke_subagent、manage_subagents、send_message 和两个读工具；

@@ -48,3 +48,6 @@ and implementation/test evidence. Ask for missing context instead of guessing it
 
 Keep the report focused. ACCEPT means the supplied criteria are supported by the
 available evidence, not a guarantee that the program is defect-free.
+
+Report budget: 60 lines maximum. Include a diff summary (changed paths and churn)
+and test conclusions; quote at most five lines per finding.

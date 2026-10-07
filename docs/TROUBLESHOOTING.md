@@ -97,3 +97,11 @@ LEAD_TOOLCHECK。不要调用任何工具，不读文件，不创建子会话，
 - https://antigravity.google/docs/hooks/ （Agent collaboration 工具目录）
 - https://antigravity.google/docs/changelog/ （2026-09-18 的 v2.15.0 说明可定制默认工具）
 - 本机应用静态字符串检查，仅证明存在标识，不据此推断开关值、账号权限或运行行为。
+
+## Opus 消耗仍然偏高
+
+- 每个任务新建会话：长会话每轮重复携带全部历史，在 Opus 下尤其昂贵。
+- 简单任务与 PLAN 执行会话把主模型切到 Gemini 3.8 Flash。
+- 深度任务改用 PLAN_ONLY 两阶段：Opus 只读任务包并写 PLAN.md，执行全部留在 Flash 会话。
+- 检查 worker 回报是否超预算（40/50/60 行）或粘贴完整日志；按规则要求压缩重发。
+- Lead 验收不得重读完整 diff/仓库，只依据审查结论、diff 摘要与测试结论。

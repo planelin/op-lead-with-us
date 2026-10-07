@@ -20,7 +20,7 @@ function rewrite(root, file, fn) {
   writeFileSync(path, fn(readFileSync(path, 'utf8')));
 }
 
-test('source plugin validates', () => assert.equal(validatePlugin().checks.length, 8));
+test('source plugin validates', () => assert.equal(validatePlugin().checks.length, 9));
 test('CRLF frontmatter is supported', () => {
   const source = readFileSync(join(projectRoot, 'agents/agy-researcher.md'), 'utf8').replace(/\r?\n/g, '\r\n');
   assert.equal(parseFrontmatter(source).metadata.model, 'flash');
@@ -72,7 +72,7 @@ test('stage creates a byte-identical workspace install and is idempotent', () =>
   const root = fixture();
   const target = stagePlugin(root);
   for (const file of packageFiles) assert.deepEqual(readFileSync(join(target, file)), readFileSync(join(root, file)));
-  assert.equal(validatePlugin(target).checks.length, 8);
+  assert.equal(validatePlugin(target).checks.length, 9);
   assert.equal(stagePlugin(root), target);
   assert(!existsSync(join(root, '.gemini')));
 });
@@ -130,4 +130,19 @@ test('lead cannot gain shell tools as implementation fallback', () => {
   const root = fixture();
   rewrite(root, 'agents/op-lead-with-us.md', s => s.replace('  - send_message', '  - send_message\n  - run_command'));
   assert.throws(() => validatePlugin(root), /Lead must explicitly request/);
+});
+test('lead must define PLAN_ONLY two-phase planning', () => {
+  const root = fixture();
+  rewrite(root, 'agents/op-lead-with-us.md', s => s.split('PLAN_ONLY').join('TWO_PHASE'));
+  assert.throws(() => validatePlugin(root), /PLAN_ONLY two-phase planning/);
+});
+test('worker report budgets are required', () => {
+  const root = fixture();
+  rewrite(root, 'agents/agy-researcher.md', s => s.replace('Report budget: 40 lines maximum.', ''));
+  assert.throws(() => validatePlugin(root), /missing report budget/);
+});
+test('two-model policy is pinned in rules', () => {
+  const root = fixture();
+  rewrite(root, 'rules/op-lead-with-us.md', s => s.replace('Only two models participate', 'Two models participate'));
+  assert.throws(() => validatePlugin(root), /two-model policy/);
 });

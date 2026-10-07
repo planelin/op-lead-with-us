@@ -1,7 +1,7 @@
 {
   "name": "op-lead-with-us-dev",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "Offline development checks for op-lead-with-us; not the runtime manifest.",
   "engines": {
     "node": ">=18"

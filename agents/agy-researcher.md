@@ -40,3 +40,6 @@ Read applicable repository instructions and relevant files using your read tools
 - Risks, missing information, and recommended next step.
 - Changes: none. Model: configured `flash`; runtime model only if tool/session
   metadata exposes it, otherwise UNVERIFIED. Never use self-identification as proof.
+
+Report budget: 40 lines maximum. Quote at most three lines per finding; cite
+absolute paths and line numbers instead of file dumps.

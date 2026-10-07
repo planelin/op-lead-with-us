@@ -98,8 +98,8 @@ function install() {
   console.log('使用方法：');
   console.log('1. 重启或在 Antigravity 桌面端新建对话 (Ctrl+N)');
   console.log('2. Agent 选择器选择: op-lead-with-us');
-  console.log('3. 模型选择器选择: Claude Opus 5.5');
-  console.log('4. 发送任务，Lead 将自动规划并委派 Flash 完成实现！');
+  console.log('3. 模型选择器按会话类型选择: Claude Opus 5.5（复杂规划/验收）或 Gemini 3.8 Flash（简单任务/Execute PLAN.md）');
+  console.log('4. 省额度可先在 Opus 会话 PLAN_ONLY 生成 PLAN.md，再新开 Flash 会话执行 Execute PLAN.md');
   console.log('=========================================\n');
 }
 

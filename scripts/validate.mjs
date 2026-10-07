@@ -100,12 +100,16 @@ export function validatePlugin(root = projectRoot) {
         : ['view_file', 'grep_search', 'run_command'];
       assert.deepEqual(m.tools, expected, `${name}: tool capabilities changed`);
       assert(body.includes('UNVERIFIED'), `${name}: missing runtime model caveat`);
+      const budget = name === 'agy-researcher' ? 40 : name === 'agy-implementer' ? 50 : 60;
+      assert(body.includes(`Report budget: ${budget} lines maximum`), `${name}: missing report budget`);
     } else {
       assert.deepEqual(m.tools, leadToolNames, 'Lead must explicitly request delegation, lifecycle and read tools');
       assert(body.includes('LEAD_CONFIG_V2') && body.includes('LEAD_TOOLCHECK'), 'Lead must expose a capability preflight');
       assert(body.includes('MISSING_INVOKE_TOOL') && body.includes('WORKER_NOT_DISCOVERED'), 'Lead must distinguish capability from discovery failure');
       for (const worker of agentNames.filter(n => n !== name)) assert(body.includes(worker), `Lead does not refer to ${worker}`);
       assert(body.includes('repair_cycles_remaining') && body.includes('repair_cycles_used'), 'Lead must track repairs across invocations');
+      assert(body.includes('PLAN_ONLY') && body.includes('Execute PLAN.md') && body.includes('verbatim'), 'Lead must define PLAN_ONLY two-phase planning with verbatim transcription');
+      assert(body.includes('report budgets'), 'Lead must enforce worker report budgets');
     }
     checks.push(`agent: ${name} (${m.model}; main=${m.mainAgent}; subagent=${m.subagent})`);
   }
@@ -125,7 +129,9 @@ export function validatePlugin(root = projectRoot) {
   assert.equal(typeof rule.metadata.description, 'string');
   assert(readFileSync(rulePath).byteLength < 24000, 'Rule exceeds documented per-file size limit');
   assert(rule.body.includes('Otherwise do not alter'), 'Rule must not hijack unrelated conversations');
+  assert(rule.body.includes('Only two models participate') && rule.body.includes('PLAN_ONLY'), 'Rule must pin the two-model policy and PLAN_ONLY');
   checks.push('rule: valid activation and limited scope');
+  checks.push('cost controls: two-model policy, PLAN_ONLY and report budgets');
 
   for (const forbidden of ['hooks.json', 'mcp_config.json']) assert(!existsSync(join(root, forbidden)), `MVP must not silently introduce ${forbidden}`);
   checks.push('no hooks, external MCP or automatic model API');
