@@ -208,4 +208,3 @@ npm run install:global
 ## 📄 License
 
 Released under the [MIT License](./LICENSE).
-```
