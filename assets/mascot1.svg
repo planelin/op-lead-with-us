@@ -1,0 +1,468 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="100%" height="100%">
+  <defs>
+    <!-- Soft 3D Lighting for Octopus Body -->
+    <radialGradient id="octo-body-grad" cx="42%" cy="34%" r="65%">
+      <stop offset="0%" stop-color="#EAF6FF"/>
+      <stop offset="28%" stop-color="#C2E4FD"/>
+      <stop offset="65%" stop-color="#8ECAF5"/>
+      <stop offset="88%" stop-color="#67ACE2"/>
+      <stop offset="100%" stop-color="#4E94CD"/>
+    </radialGradient>
+
+    <!-- Lower Cheeks and Underside Shading -->
+    <linearGradient id="octo-underside-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8ECAF5" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#64AAE0" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#438BC4" stop-opacity="0.8"/>
+    </linearGradient>
+
+    <!-- Glossy Forehead Specular Sheen -->
+    <linearGradient id="forehead-sheen" x1="0%" y1="0%" x2="100%" y2="80%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.88"/>
+      <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Big Plump Tentacle Cushion Lobes Gradients -->
+    <radialGradient id="lobe-grad-center" cx="50%" cy="26%" r="65%">
+      <stop offset="0%" stop-color="#F0F8FE"/>
+      <stop offset="35%" stop-color="#BEE4FD"/>
+      <stop offset="76%" stop-color="#7ABBEA"/>
+      <stop offset="100%" stop-color="#5194C5"/>
+    </radialGradient>
+
+    <radialGradient id="lobe-grad-left" cx="38%" cy="26%" r="65%">
+      <stop offset="0%" stop-color="#EBF5FE"/>
+      <stop offset="35%" stop-color="#B4E2FC"/>
+      <stop offset="76%" stop-color="#72B3E6"/>
+      <stop offset="100%" stop-color="#4B8EC0"/>
+    </radialGradient>
+
+    <radialGradient id="lobe-grad-right" cx="62%" cy="26%" r="65%">
+      <stop offset="0%" stop-color="#EBF5FE"/>
+      <stop offset="35%" stop-color="#B4E2FC"/>
+      <stop offset="76%" stop-color="#72B3E6"/>
+      <stop offset="100%" stop-color="#4B8EC0"/>
+    </radialGradient>
+
+    <!-- Ground Shadow Underneath Tentacles -->
+    <radialGradient id="ground-shadow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#241B42" stop-opacity="0.6"/>
+      <stop offset="55%" stop-color="#3D3266" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#685C92" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Fine Diamond Mesh for Lace Mask -->
+    <pattern id="lace-mesh" width="12" height="12" patternUnits="userSpaceOnUse">
+      <rect width="12" height="12" fill="#111017" fill-opacity="0.94"/>
+      <path d="M 0,0 L 12,12 M 12,0 L 0,12" stroke="#2D2B3D" stroke-width="0.75" opacity="0.6"/>
+      <circle cx="6" cy="6" r="1.6" fill="#09080D"/>
+      <circle cx="6" cy="6" r="0.9" fill="#3D3A50" opacity="0.45"/>
+      <circle cx="0" cy="0" r="1.1" fill="#09080D"/>
+      <circle cx="12" cy="0" r="1.1" fill="#09080D"/>
+      <circle cx="0" cy="12" r="1.1" fill="#09080D"/>
+      <circle cx="12" cy="12" r="1.1" fill="#09080D"/>
+    </pattern>
+
+    <!-- Satin Ribbon Linear Gradient -->
+    <linearGradient id="ribbon-satin-grad" x1="0%" y1="0%" x2="100%" y2="85%">
+      <stop offset="0%" stop-color="#2E2B36"/>
+      <stop offset="25%" stop-color="#16151B"/>
+      <stop offset="55%" stop-color="#2B2934"/>
+      <stop offset="85%" stop-color="#121118"/>
+      <stop offset="100%" stop-color="#08080B"/>
+    </linearGradient>
+
+    <linearGradient id="ribbon-sheen-line" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#706B82" stop-opacity="0.75"/>
+      <stop offset="50%" stop-color="#464355" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#1A1922" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Rosette Camellia Petal Gradient -->
+    <radialGradient id="camellia-petal-grad" cx="42%" cy="36%" r="62%">
+      <stop offset="0%" stop-color="#F472B6"/>
+      <stop offset="35%" stop-color="#E11D48"/>
+      <stop offset="75%" stop-color="#9F1239"/>
+      <stop offset="100%" stop-color="#4C0519"/>
+    </radialGradient>
+  </defs>
+
+  <!-- BACKGROUND -->
+  <rect width="800" height="800" fill="#F8FAFC" rx="16"/>
+
+  <!-- ==================== 1. HERALDIC CREST CIRCULAR FRAME ==================== -->
+  <g id="heraldic-frame">
+    <!-- Star Sparkles in Four Diagonals -->
+    <path d="M 140,135 Q 140,155 158,159 Q 140,163 140,183 Q 140,163 122,159 Q 140,155 140,135 Z" fill="#1C274C"/>
+    <path d="M 660,135 Q 660,155 678,159 Q 660,163 660,183 Q 660,163 642,159 Q 660,155 660,135 Z" fill="#1C274C"/>
+    <path d="M 130,595 Q 130,613.5 146,617 Q 130,620.5 130,639 Q 130,620.5 114,617 Q 130,613.5 130,595 Z" fill="#1C274C"/>
+    <path d="M 670,595 Q 670,613.5 686,617 Q 670,620.5 670,639 Q 670,620.5 654,617 Q 670,613.5 670,595 Z" fill="#1C274C"/>
+
+    <!-- Outer Solid Navy Ring -->
+    <circle cx="400" cy="400" r="322" fill="none" stroke="#1C274C" stroke-width="5.5"/>
+
+    <!-- Inner Dotted Decorative Ring -->
+    <circle cx="400" cy="400" r="302" fill="none" stroke="#1C274C" stroke-width="3" stroke-dasharray="2, 9" stroke-linecap="round"/>
+
+    <!-- Top Fleur-de-lis Emblem (at 12 o'clock) -->
+    <g id="top-fleur" transform="translate(400, 72) scale(0.92)">
+      <path d="M 0,-48 C 8,-32 15,-16 12,0 C 7,8 2,13 0,15 C -2,13 -7,8 -12,0 C -15,-16 -8,-32 0,-48 Z" fill="#1C274C"/>
+      <path d="M -3,5 C -13,4 -30,2 -34,-15 C -36,-26 -26,-32 -17,-26 C -7,-19 -7,-4 -2,7 Z" fill="#1C274C"/>
+      <path d="M 3,5 C 13,4 30,2 34,-15 C 36,-26 26,-32 17,-26 C 7,-19 7,-4 2,7 Z" fill="#1C274C"/>
+      <rect x="-20" y="11" width="40" height="7" rx="3.5" fill="#1C274C"/>
+      <path d="M -13,20 C -16,30 -8,35 0,36 C 8,35 16,30 13,20 Z" fill="#1C274C"/>
+    </g>
+
+    <!-- Bottom Inverted Fleur-de-lis Emblem (at 6 o'clock) -->
+    <g id="bottom-fleur" transform="translate(400, 728) scale(0.92) rotate(180)">
+      <path d="M 0,-48 C 8,-32 15,-16 12,0 C 7,8 2,13 0,15 C -2,13 -7,8 -12,0 C -15,-16 -8,-32 0,-48 Z" fill="#1C274C"/>
+      <path d="M -3,5 C -13,4 -30,2 -34,-15 C -36,-26 -26,-32 -17,-26 C -7,-19 -7,-4 -2,7 Z" fill="#1C274C"/>
+      <path d="M 3,5 C 13,4 30,2 34,-15 C 36,-26 26,-32 17,-26 C 7,-19 7,-4 2,7 Z" fill="#1C274C"/>
+      <rect x="-20" y="11" width="40" height="7" rx="3.5" fill="#1C274C"/>
+      <path d="M -13,20 C -16,30 -8,35 0,36 C 8,35 16,30 13,20 Z" fill="#1C274C"/>
+    </g>
+  </g>
+
+  <!-- ==================== 2. SOFT GROUND SHADOW (WIDE & RICH) ==================== -->
+  <ellipse cx="400" cy="672" rx="275" ry="28" fill="url(#ground-shadow)"/>
+
+  <!-- ==================== 3. SQUISHY CUTE OCTOPUS BODY ==================== -->
+  <g id="octopus-character">
+    <!-- Tentacles Crease Base Silhouette -->
+    <path d="M 140,580 C 115,615 125,665 170,682 C 215,695 245,668 265,640 C 285,685 330,698 370,690 C 400,698 445,690 465,640 C 485,668 515,695 560,682 C 605,665 615,615 590,580 Z" 
+          fill="#2C4E72" opacity="0.32"/>
+
+    <!-- Main Head Dome: Cute, compact mochi dome below the upper crest region -->
+    <path d="M 235,510 
+             C 215,455 208,375 215,310 
+             C 222,255 258,220 320,206 
+             C 360,196 440,196 480,206 
+             C 542,220 578,255 585,310 
+             C 592,375 585,455 565,510 
+             C 545,555 515,572 475,572 
+             C 435,572 365,572 325,572 
+             C 285,572 255,555 235,510 Z" 
+          fill="url(#octo-body-grad)" stroke="#192843" stroke-width="5.2" stroke-linejoin="round"/>
+
+    <!-- Lower Cheeks Shading -->
+    <path d="M 225,440 
+             C 222,495 240,548 280,568 
+             C 340,588 460,588 520,568 
+             C 560,548 578,495 575,440 
+             C 560,505 505,548 400,548 
+             C 295,548 240,505 225,440 Z" 
+          fill="url(#octo-underside-grad)"/>
+
+    <!-- ==================== PLUMP & ENLARGED CUSHION TENTACLES ==================== -->
+    <!-- 5 Big, Volumetric, Squishy Mochi Lobes Spanning from x=125 to x=675, y=510 to y=686! -->
+    
+    <!-- Tentacle 1 (Far Left Flared Outward Cushion) -->
+    <path d="M 245,520 
+             C 195,520 135,555 125,612 
+             C 114,668 172,692 218,678 
+             C 260,664 280,622 274,582 
+             C 268,548 258,528 245,520 Z" 
+          fill="url(#lobe-grad-left)" stroke="#192843" stroke-width="5.2" stroke-linejoin="round"/>
+
+    <!-- Tentacle 5 (Far Right Flared Outward Cushion) -->
+    <path d="M 555,520 
+             C 605,520 665,555 675,612 
+             C 686,668 628,692 582,678 
+             C 540,664 520,622 526,582 
+             C 532,548 542,528 555,520 Z" 
+          fill="url(#lobe-grad-right)" stroke="#192843" stroke-width="5.2" stroke-linejoin="round"/>
+
+    <!-- Tentacle 2 (Mid-Left Big Round Cushion) -->
+    <path d="M 255,565 
+             C 236,588 232,635 256,674 
+             C 284,706 338,706 364,666 
+             C 382,632 374,588 348,565 
+             C 316,552 280,552 255,565 Z" 
+          fill="url(#lobe-grad-left)" stroke="#192843" stroke-width="5.2" stroke-linejoin="round"/>
+
+    <!-- Tentacle 4 (Mid-Right Big Round Cushion) -->
+    <path d="M 545,565 
+             C 564,588 568,635 544,674 
+             C 516,706 462,706 436,666 
+             C 418,632 426,588 452,565 
+             C 484,552 520,552 545,565 Z" 
+          fill="url(#lobe-grad-right)" stroke="#192843" stroke-width="5.2" stroke-linejoin="round"/>
+
+    <!-- Tentacle 3 (Center Jumbo Mochi Cushion) -->
+    <path d="M 328,570 
+             C 320,610 328,660 358,690 
+             C 386,712 414,712 442,690 
+             C 472,660 480,610 472,570 
+             C 442,555 358,555 328,570 Z" 
+          fill="url(#lobe-grad-center)" stroke="#192843" stroke-width="5.2" stroke-linejoin="round"/>
+
+    <!-- Deep Crease Shading & Accents between Tentacles -->
+    <path d="M 256,580 Q 246,626 256,654" stroke="#1F4264" stroke-width="4.8" fill="none" stroke-linecap="round"/>
+    <path d="M 346,585 Q 336,640 350,672" stroke="#1F4264" stroke-width="5.2" fill="none" stroke-linecap="round"/>
+    <path d="M 454,585 Q 464,640 450,672" stroke="#1F4264" stroke-width="5.2" fill="none" stroke-linecap="round"/>
+    <path d="M 544,580 Q 554,626 544,654" stroke="#1F4264" stroke-width="4.8" fill="none" stroke-linecap="round"/>
+
+    <!-- Glossy Curved Highlights on Tentacle Tops -->
+    <ellipse cx="200" cy="605" rx="22" ry="11" transform="rotate(-15 200 605)" fill="#FFFFFF" opacity="0.32"/>
+    <ellipse cx="302" cy="622" rx="24" ry="12" transform="rotate(-8 302 622)" fill="#FFFFFF" opacity="0.32"/>
+    <ellipse cx="400" cy="630" rx="28" ry="13" fill="#FFFFFF" opacity="0.35"/>
+    <ellipse cx="498" cy="622" rx="24" ry="12" transform="rotate(8 498 622)" fill="#FFFFFF" opacity="0.32"/>
+    <ellipse cx="600" cy="605" rx="22" ry="11" transform="rotate(15 600 605)" fill="#FFFFFF" opacity="0.32"/>
+
+    <!-- Forehead Glossy Highlight (Adjusted to new dome apex) -->
+    <ellipse cx="478" cy="232" rx="32" ry="18" transform="rotate(-22 478 232)" fill="url(#forehead-sheen)"/>
+    <ellipse cx="492" cy="244" rx="12" ry="6" transform="rotate(-18 492 244)" fill="#FFFFFF" opacity="0.65"/>
+    <ellipse cx="330" cy="236" rx="18" ry="10" transform="rotate(20 330 236)" fill="#FFFFFF" opacity="0.32"/>
+
+    <!-- ==================== 4. ENLARGED & EXPRESSIVE DEADPAN EYES ==================== -->
+    <g id="deadpan-eyes">
+      <!-- Left Eye (Width: 92px, Height: 76px; Center: ~322, 452) -->
+      <g id="left-eye">
+        <!-- White Sclera Substrate -->
+        <path d="M 276,442 
+                 C 276,420 305,415 348,418 
+                 C 366,420 372,438 370,455 
+                 C 366,478 338,494 308,490 
+                 C 285,486 276,464 276,442 Z" fill="#EAF3FB"/>
+        
+        <!-- Big Dark Espresso Iris / Pupil (Deadpan Flat-Top Eyelid) -->
+        <path d="M 280,428 
+                 C 304,424 344,424 366,429 
+                 C 370,448 362,478 340,486 
+                 C 314,490 292,482 285,466 
+                 C 280,452 278,438 280,428 Z" 
+              fill="#181519" stroke="#0E0C0F" stroke-width="2.8"/>
+        
+        <!-- Big Specular Highlight Pill (Crisp Top-Right) -->
+        <rect x="338" y="434" width="16" height="22" rx="6" fill="#FFFFFF"/>
+        <!-- Small Specular Light (Bottom-Left) -->
+        <circle cx="304" cy="468" r="3.8" fill="#FFFFFF" opacity="0.88"/>
+
+        <!-- Eyebrow Crease Fold Above Left Eye -->
+        <path d="M 292,416 C 308,411 328,412 344,417" 
+              fill="none" stroke="#16253E" stroke-width="3" stroke-linecap="round"/>
+      </g>
+
+      <!-- Right Eye (Width: 92px, Height: 76px; Center: ~478, 452) -->
+      <g id="right-eye">
+        <!-- White Sclera Substrate -->
+        <path d="M 430,418 
+                 C 473,415 502,420 502,442 
+                 C 502,464 493,486 470,490 
+                 C 440,494 412,478 408,455 
+                 C 406,438 412,420 430,418 Z" fill="#EAF3FB"/>
+
+        <!-- Big Dark Espresso Iris / Pupil (Deadpan Flat-Top Eyelid) -->
+        <path d="M 412,429 
+                 C 434,424 474,424 498,428 
+                 C 500,438 498,452 493,466 
+                 C 486,482 464,490 438,486 
+                 C 416,478 408,448 412,429 Z" 
+              fill="#181519" stroke="#0E0C0F" stroke-width="2.8"/>
+
+        <!-- Big Specular Highlight Pill (Crisp Top-Right) -->
+        <rect x="470" y="434" width="16" height="22" rx="6" fill="#FFFFFF"/>
+        <!-- Small Specular Light (Bottom-Left) -->
+        <circle cx="436" cy="468" r="3.8" fill="#FFFFFF" opacity="0.88"/>
+
+        <!-- Eyebrow Crease Fold Above Right Eye -->
+        <path d="M 508,416 C 492,411 472,412 456,417" 
+              fill="none" stroke="#16253E" stroke-width="3" stroke-linecap="round"/>
+      </g>
+    </g>
+
+    <!-- Sweet Downturned Pout Frown Mouth (Directly centered at x=400, y=516) -->
+    <path d="M 380,522 C 390,508 410,508 420,522" 
+          fill="none" stroke="#16253E" stroke-width="6.2" stroke-linecap="round"/>
+
+    <!-- Soft Rosy Blush on Cheeks -->
+    <ellipse cx="242" cy="486" rx="18" ry="9.5" fill="#F472B6" opacity="0.32"/>
+    <ellipse cx="558" cy="486" rx="18" ry="9.5" fill="#F472B6" opacity="0.32"/>
+
+    <!-- ==================== 5. INTRICATE BLACK LACE MASQUERADE MASK ==================== -->
+    <g id="lace-masquerade-mask">
+      <!-- Mask Drop Shadow on Skin -->
+      <path d="M 215,345 
+               C 220,312 245,282 285,275 
+               C 328,268 368,288 400,312 
+               C 432,288 472,268 515,275 
+               C 555,282 580,312 585,345 
+               C 592,398 585,456 560,492 
+               C 538,522 500,526 470,496 
+               C 448,476 426,454 400,454 
+               C 374,454 352,476 330,496 
+               C 300,526 262,522 240,492 
+               C 215,456 208,398 215,345 Z" 
+            fill="#1B2536" opacity="0.35"/>
+
+      <!-- Solid Foundation Mask Layer (with Widened Eye Cutouts & Clear Nose Bridge) -->
+      <path d="
+        M 215,340 
+        C 220,308 245,278 285,270 
+        C 328,262 368,282 400,306 
+        C 432,282 472,262 515,270 
+        C 555,278 580,308 585,340 
+        C 592,392 585,450 560,486 
+        C 538,516 500,520 470,490 
+        C 448,470 426,448 400,448 
+        C 374,448 352,470 330,490 
+        C 300,520 262,516 240,486 
+        C 215,450 208,392 215,340 Z 
+        M 270,446 
+        C 270,412 305,404 348,406 
+        C 376,408 386,426 384,456 
+        C 382,488 355,504 322,500 
+        C 292,496 270,476 270,446 Z 
+        M 416,456 
+        C 414,426 424,408 452,406 
+        C 495,404 530,412 530,446 
+        C 530,476 508,496 478,500 
+        C 445,504 418,488 416,456 Z
+        " 
+        fill="#121118" fill-opacity="0.92" fill-rule="evenodd" stroke="#0C0B0E" stroke-width="2.5"/>
+
+      <!-- Fine Diamond Mesh Texture Overlay -->
+      <path d="
+        M 215,340 
+        C 220,308 245,278 285,270 
+        C 328,262 368,282 400,306 
+        C 432,282 472,262 515,270 
+        C 555,278 580,308 585,340 
+        C 592,392 585,450 560,486 
+        C 538,516 500,520 470,490 
+        C 448,470 426,448 400,448 
+        C 374,448 352,470 330,490 
+        C 300,520 262,516 240,486 
+        C 215,450 208,392 215,340 Z 
+        M 270,446 C 270,412 305,404 348,406 C 376,408 386,426 384,456 C 382,488 355,504 322,500 C 292,496 270,476 270,446 Z 
+        M 416,456 C 414,426 424,408 452,406 C 495,404 530,412 530,446 C 530,476 508,496 478,500 C 445,504 418,488 416,456 Z
+        " 
+        fill="url(#lace-mesh)" fill-rule="evenodd"/>
+
+      <!-- Center Forehead Medallion & Baroque Embroidery -->
+      <path d="M 400,306 C 388,288 376,262 400,244 C 424,262 412,288 400,306 Z" fill="#0A090C"/>
+      <circle cx="400" cy="272" r="4.5" fill="#3D3A4B"/>
+
+      <!-- Left Brow Embroidery Scrolls & Leaf Motifs -->
+      <path d="M 390,298 C 362,276 325,258 285,268 C 255,278 232,304 222,334" 
+            fill="none" stroke="#0A090C" stroke-width="5" stroke-linecap="round"/>
+      <path d="M 368,286 Q 344,262 312,268" fill="none" stroke="#2B2836" stroke-width="3"/>
+      <path d="M 325,274 Q 292,250 262,268" fill="none" stroke="#0A090C" stroke-width="3.5"/>
+      <circle cx="335" cy="268" r="3" fill="#2B2836"/>
+      <circle cx="278" cy="264" r="3" fill="#2B2836"/>
+
+      <!-- Right Brow Embroidery Scrolls & Leaf Motifs -->
+      <path d="M 410,298 C 438,276 475,258 515,268 C 545,278 568,304 578,334" 
+            fill="none" stroke="#0A090C" stroke-width="5" stroke-linecap="round"/>
+      <path d="M 432,286 Q 456,262 488,268" fill="none" stroke="#2B2836" stroke-width="3"/>
+      <path d="M 475,274 Q 508,250 538,268" fill="none" stroke="#0A090C" stroke-width="3.5"/>
+      <circle cx="465" cy="268" r="3" fill="#2B2836"/>
+      <circle cx="522" cy="264" r="3" fill="#2B2836"/>
+
+      <!-- Delicate Scalloped Picot Edge along Upper Mask Rim -->
+      <path d="
+        M 218,335 
+        Q 224,316 235,312 Q 246,298 258,292 Q 272,280 286,278 Q 302,270 320,268 
+        Q 336,268 352,274 Q 368,282 384,294 Q 394,301 400,306 Q 406,301 416,294 
+        Q 432,282 448,274 Q 464,268 480,268 Q 498,270 514,278 Q 528,280 542,292 
+        Q 554,298 565,312 Q 576,316 582,335" 
+        fill="none" stroke="#181620" stroke-width="3.2" stroke-linecap="round"/>
+
+      <!-- Delicate Scalloped Trim along Lower Rim -->
+      <path d="
+        M 226,425 
+        Q 235,455 250,478 Q 270,506 298,506 Q 322,494 342,472 Q 364,452 384,442 
+        Q 400,440 416,442 Q 436,452 458,472 Q 478,494 502,506 Q 530,506 550,478 
+        Q 565,455 574,425" 
+        fill="none" stroke="#181620" stroke-width="3.5" stroke-linecap="round"/>
+
+      <!-- Embroidered Border Framing the Big Eye Openings -->
+      <!-- Left Eye Rim -->
+      <path d="M 268,446 C 268,410 305,400 348,402 C 378,404 388,424 386,456 C 384,488 357,506 322,502 C 290,498 268,478 268,446 Z" 
+            fill="none" stroke="#0A090C" stroke-width="3.2"/>
+      <!-- Right Eye Rim -->
+      <path d="M 414,456 C 412,424 422,404 452,402 C 495,400 532,410 532,446 C 532,478 510,498 478,502 C 443,506 416,488 414,456 Z" 
+            fill="none" stroke="#0A090C" stroke-width="3.2"/>
+    </g>
+
+    <!-- ==================== 6. SATIN BOWS & CASCADING RIBBONS & ROSSETTES ==================== -->
+    <!-- Left Side Temple Ornaments -->
+    <g id="left-side-ornaments">
+      <path d="M 215,380 
+               C 178,412 142,465 132,540 
+               C 126,572 158,555 178,515 
+               C 194,485 208,435 218,398 Z" 
+            fill="url(#ribbon-satin-grad)" stroke="#0A090D" stroke-width="2.2"/>
+      <path d="M 138,530 Q 152,478 184,438" stroke="url(#ribbon-sheen-line)" stroke-width="3" fill="none"/>
+
+      <path d="M 205,390 
+               C 184,432 164,498 168,565 
+               L 188,550 L 204,575 
+               C 214,508 220,452 224,405 Z" 
+            fill="url(#ribbon-satin-grad)" stroke="#0A090D" stroke-width="2.2"/>
+
+      <path d="M 210,366 
+               C 178,328 142,298 132,324 
+               C 122,350 158,378 198,384 Z" 
+            fill="url(#ribbon-satin-grad)" stroke="#0A090D" stroke-width="2.8"/>
+      <path d="M 142,324 Q 164,346 194,366" stroke="url(#ribbon-sheen-line)" stroke-width="2.2" fill="none"/>
+
+      <path d="M 210,378 
+               C 168,382 128,404 138,436 
+               C 148,456 184,426 210,394 Z" 
+            fill="url(#ribbon-satin-grad)" stroke="#0A090D" stroke-width="2.8"/>
+
+      <!-- Pink Camellia Rosette (Left) -->
+      <g id="left-rosette" transform="translate(205, 386)">
+        <circle cx="0" cy="0" r="24" fill="#881337"/>
+        <path d="M -21,-6 C -29,-18 -13,-30 0,-23 C 13,-30 29,-18 21,-6 C 29,6 23,25 10,23 C -4,25 -21,17 -21,-6 Z" 
+              fill="url(#camellia-petal-grad)" stroke="#4C0519" stroke-width="1.8"/>
+        <circle cx="0" cy="0" r="16" fill="#E11D48"/>
+        <path d="M -10,-8 C -15,-15 -3,-19 4,-15 C 12,-10 12,5 4,10 C -3,15 -15,10 -10,-8 Z" fill="#FB7185"/>
+        <circle cx="0" cy="0" r="8" fill="#18151D"/>
+        <circle cx="0" cy="0" r="5" fill="#0A080C"/>
+        <circle cx="-1.6" cy="-1.6" r="1.6" fill="#FFFFFF" opacity="0.7"/>
+      </g>
+    </g>
+
+    <!-- Right Side Temple Ornaments -->
+    <g id="right-side-ornaments">
+      <path d="M 585,380 
+               C 622,412 658,465 668,540 
+               C 674,572 642,555 622,515 
+               C 606,485 592,435 582,398 Z" 
+            fill="url(#ribbon-satin-grad)" stroke="#0A090D" stroke-width="2.2"/>
+      <path d="M 662,530 Q 648,478 616,438" stroke="url(#ribbon-sheen-line)" stroke-width="3" fill="none"/>
+
+      <path d="M 595,390 
+               C 616,432 636,498 632,565 
+               L 612,550 L 596,575 
+               C 586,508 580,452 576,405 Z" 
+            fill="url(#ribbon-satin-grad)" stroke="#0A090D" stroke-width="2.2"/>
+
+      <path d="M 590,366 
+               C 622,328 658,298 668,324 
+               C 678,350 642,378 602,384 Z" 
+            fill="url(#ribbon-satin-grad)" stroke="#0A090D" stroke-width="2.8"/>
+      <path d="M 658,324 Q 636,346 606,366" stroke="url(#ribbon-sheen-line)" stroke-width="2.2" fill="none"/>
+
+      <path d="M 590,378 
+               C 632,382 672,404 662,436 
+               C 652,456 616,426 590,394 Z" 
+            fill="url(#ribbon-satin-grad)" stroke="#0A090D" stroke-width="2.8"/>
+
+      <!-- Pink Camellia Rosette (Right) -->
+      <g id="right-rosette" transform="translate(595, 386)">
+        <circle cx="0" cy="0" r="24" fill="#881337"/>
+        <path d="M 21,-6 C 29,-18 13,-30 0,-23 C -13,-30 -29,-18 -21,-6 C -29,6 -23,25 -10,23 C 4,25 21,17 21,-6 Z" 
+              fill="url(#camellia-petal-grad)" stroke="#4C0519" stroke-width="1.8"/>
+        <circle cx="0" cy="0" r="16" fill="#E11D48"/>
+        <path d="M 10,-8 C 15,-15 3,-19 -4,-15 C -12,-10 -12,5 -4,10 C 3,15 15,10 10,-8 Z" fill="#FB7185"/>
+        <circle cx="0" cy="0" r="8" fill="#18151D"/>
+        <circle cx="0" cy="0" r="5" fill="#0A080C"/>
+        <circle cx="-1.6" cy="-1.6" r="1.6" fill="#FFFFFF" opacity="0.7"/>
+      </g>
+    </g>
+  </g>
+</svg>

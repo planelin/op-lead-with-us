@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- 核心奇点紫粉电离渐变 -->
+    <radialGradient id="gravitonCore" cx="45%" cy="42%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="22%" stop-color="#f0abfc" />
+      <stop offset="52%" stop-color="#a855f7" />
+      <stop offset="82%" stop-color="#4c1d95" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </radialGradient>
+
+    <!-- 外围引力场辉光 -->
+    <radialGradient id="gravityAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.55" />
+      <stop offset="45%" stop-color="#6366f1" stop-opacity="0.22" />
+      <stop offset="75%" stop-color="#38bdf8" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- 能量环渐变 -->
+    <linearGradient id="orbitGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f472b6" />
+      <stop offset="50%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+
+    <!-- Flash 卫星节点渐变 -->
+    <radialGradient id="flashNodeGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#e0f2fe" />
+      <stop offset="45%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </radialGradient>
+
+    <!-- 发光滤镜 -->
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- 1. 背景引力场光晕 -->
+  <circle cx="250" cy="250" r="220" fill="url(#gravityAura)" />
+
+  <!-- 2. 外层机械刻度约束环 -->
+  <circle cx="250" cy="250" r="192" fill="none" stroke="#334155" stroke-width="2" stroke-dasharray="4 10" opacity="0.7" />
+  <circle cx="250" cy="250" r="176" fill="none" stroke="url(#orbitGrad1)" stroke-width="1.5" opacity="0.45" />
+
+  <!-- 3. 三道交织的引力喷涌星轨（代表 Lead 派发与汇聚 3 个 Flash 子代理） -->
+  <g fill="none" stroke-linecap="round">
+    <!-- 轨道 A -->
+    <ellipse cx="250" cy="250" rx="168" ry="68" transform="rotate(-30 250 250)"
+             stroke="url(#orbitGrad1)" stroke-width="4" stroke-dasharray="220 60" opacity="0.85" />
+    <!-- 轨道 B -->
+    <ellipse cx="250" cy="250" rx="168" ry="68" transform="rotate(30 250 250)"
+             stroke="url(#orbitGrad1)" stroke-width="4" stroke-dasharray="220 60" opacity="0.85" />
+    <!-- 轨道 C -->
+    <ellipse cx="250" cy="250" rx="168" ry="68" transform="rotate(90 250 250)"
+             stroke="url(#orbitGrad1)" stroke-width="4" stroke-dasharray="220 60" opacity="0.85" />
+  </g>
+
+  <!-- 4. 向心引力坍缩流线（象征将压缩证据吸回主脑） -->
+  <g fill="none" stroke="#f472b6" stroke-width="2.5" stroke-linecap="round" opacity="0.75">
+    <path d="M 135 145 Q 190 215 215 230" stroke-dasharray="4 6" />
+    <path d="M 375 155 Q 310 215 285 232" stroke-dasharray="4 6" />
+    <path d="M 250 398 Q 250 330 250 298" stroke-dasharray="4 6" />
+  </g>
+
+  <!-- 5. 中央高阶主脑：引力奇点核心 (Argon / Opus Core) -->
+  <g filter="url(#neonGlow)">
+    <!-- 奇点暗物质外环 -->
+    <circle cx="250" cy="250" r="64" fill="#0f172a" stroke="#c084fc" stroke-width="4" />
+    <!-- 奇点内旋涡流 -->
+    <path d="M 250 192 A 58 58 0 0 1 308 250" fill="none" stroke="#f472b6" stroke-width="5" stroke-linecap="round" />
+    <path d="M 250 308 A 58 58 0 0 1 192 250" fill="none" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" />
+    <!-- 奇点能量球本体 -->
+    <circle cx="250" cy="250" r="46" fill="url(#gravitonCore)" />
+    <!-- 奇点十字星芒 -->
+    <path d="M 250 212 Q 250 250 212 250 Q 250 250 250 288 Q 250 250 288 250 Q 250 250 250 212 Z"
+          fill="#ffffff" opacity="0.9" />
+  </g>
+
+  <!-- 6. 三颗高速环绕的 Flash Worker 子代理卫星 -->
+  <!-- 卫星 1: Researcher (左上) -->
+  <g filter="url(#neonGlow)">
+    <circle cx="112" cy="170" r="20" fill="url(#flashNodeGrad)" stroke="#0f172a" stroke-width="3" />
+    <circle cx="106" cy="164" r="5" fill="#ffffff" opacity="0.9" />
+  </g>
+
+  <!-- 卫星 2: Implementer (右上) -->
+  <g filter="url(#neonGlow)">
+    <circle cx="388" cy="170" r="20" fill="url(#flashNodeGrad)" stroke="#0f172a" stroke-width="3" />
+    <circle cx="382" cy="164" r="5" fill="#ffffff" opacity="0.9" />
+  </g>
+
+  <!-- 卫星 3: Reviewer (正下) -->
+  <g filter="url(#neonGlow)">
+    <circle cx="250" cy="416" r="20" fill="url(#flashNodeGrad)" stroke="#0f172a" stroke-width="3" />
+    <circle cx="244" cy="410" r="5" fill="#ffffff" opacity="0.9" />
+  </g>
+</svg>
