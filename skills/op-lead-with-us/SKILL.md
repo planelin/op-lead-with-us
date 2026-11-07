@@ -1,6 +1,6 @@
 ---
 name: op-lead-with-us
-description: "在 Antigravity 内用 Opus 规划、Flash 调研/实现/审查的原生协作流程。用户要求节省 Opus 额度、委派实现或使用 op-lead-with-us 时使用。"
+description: "在 Antigravity 内用 Opus 规划、Flash 调研/实现/审查的原生协作流程。用户要求节省主模型额度、委派实现或使用 op-lead-with-us / op-lead-with-cry 并发增速时使用。"
 ---
 
 # OP Lead With Us
@@ -12,15 +12,17 @@ installed custom agents; it does not provide a model API, quota extension or CLI
 
 1. The user selects the session model in the main conversation: Claude Opus 5.5
    for planning/acceptance, Gemini 3.8 Flash for simple tasks and PLAN execution.
-   Prefer `op-lead-with-us` as the primary agent. This skill cannot switch models.
+   Select `op-lead-with-us` to conserve main-model quota, or `op-lead-with-cry`
+   for speed-first wasteful/turbo concurrency. This skill cannot identify or switch
+   the main model. Selecting Turbo accepts higher consumption, not wider permissions.
 2. Confirm the installed worker definitions are available under their registered
    identifiers: `agy-researcher`, `agy-implementer`, `agy-reviewer`, all `flash`.
 3. If invoked in a default main agent, apply this workflow to that main agent. Do
-   NOT call `op-lead-with-us` as a subagent: it is primary-only. If invoked inside
-   a worker, obey the worker's task packet instead of orchestrating more agents.
+   NOT call `op-lead-with-us` or `op-lead-with-cry` as a subagent: they are primary-only.
+   If invoked inside a worker, obey the worker's task packet instead of orchestrating more agents.
 4. Missing definitions, delegation tools, or Flash access are blockers; explain
    them. Do not silently use `self`, `inherit`, `pro`, another model, or an external
-   CLI/app. First use requires a small routing smoke test, not a large coding job.
+   CLI/app. A routing smoke test may be run to verify worker discovery without blocking tasks.
 
 ## Capability preflight
 
@@ -48,24 +50,51 @@ substitute sending to a manually created chat for the requested automation.
   parent chat history: include absolute workspace, read/write scope, repository
   instructions, interfaces, pre-existing edits, exact acceptance commands, stop
   conditions, prior attempts, `repair_cycles_remaining`, and report format.
-- Delegate implementation and tests to the implementer. One writer per path;
-  at most two concurrent workers and four implementation packets by default.
-- Have a separate reviewer inspect actual changes and evidence after writing stops.
-- At most two total repair cycles after initial implementation, including test and
-  review fixes. Track `repair_cycles_used` across worker resumptions/replacements.
+- Delegate implementation and tests to the implementer. One owner per file and
+  shared mutable resource. For op-lead-with-us only, existing defaults remain two
+  concurrent workers, four implementation packets, and two total repair cycles.
+- For op-lead-with-cry, apply the Turbo scheduling policy below instead of those
+  defaults. Have independent reviewers inspect stable scopes; shared integration
+  checks wait for relevant writers. Track repair_cycles_used across replacements.
 - The lead accepts from the reviewer verdict, implementer evidence, a diff summary
   and test conclusions. It does not redo routine reading, implementation, tests,
   repairs, or re-read full diffs/logs. Enforce report budgets: researcher 40 lines,
   implementer 50, reviewer 60.
 
-## First-use probe
+## Turbo scheduling policy (op-lead-with-cry only)
 
-Invoke only `agy-researcher` with `ROUTING_SMOKE_TEST` and the absolute path of this
-plugin's manifest. Ask it to read the name and return without writing. Compare the
+- Speed is the objective. Actively split independent deliverables, dispatch ready
+  packets concurrently up to 3 active workers, and immediately refill free slots.
+  Do not wait for an entire batch or unrelated work. No task-wide worker-call quota;
+  the op-lead-with-us four-packet limit does not apply. Do not manufacture duplicate work.
+- Maintain a compact ready queue with depends_on, ready_when, scope ownership, interface
+  contracts, and shared_resources. Dispatch only unblocked work with stable inputs.
+  A single worker needs an explicit dependency/resource/indivisibility/capacity reason.
+- Use actual native batching/non-blocking schemas, not invented array arguments.
+  If overlap is unavailable, report CONCURRENCY_UNAVAILABLE. Avoid busy polling.
+  Count uncertain launches and cancellation-pending workers as occupied until resolved.
+- Each packet includes orchestration_mode: op-lead-with-cry, repair_budget_total: 5,
+  and repair_cycles_remaining as locally allocated credits (read-only packets: 0).
+  Reserve before dispatch: used credits + outstanding allocations <= 5. Do not hand
+  every worker the global remainder. Reclaim unused credits only on confirmed
+  completion/accounting; charge unknown usage conservatively. No reset on replacement.
+- Review frozen scopes while unrelated work continues only with stable dependencies
+  and isolated resources. Invalidate review evidence when dependencies change; final
+  acceptance needs current integrated evidence. No guaranteed speedup or reserved channel.
+- PLAN_ONLY still permits only one verbatim plan transcription and then stops;
+  LEAD_TOOLCHECK dispatches nothing. Report scheduling evidence and serial constraints,
+  not unsupported claims of actual execution overlap.
+
+## First-use probe and routing verification
+
+A routing probe (`ROUTING_SMOKE_TEST`) may be run on first use or upon user request to
+verify worker discovery with `agy-researcher` reading this plugin's manifest. Compare the
 worker's actual app/tool model metadata to its configured `flash` tier. A worker's
-textual claim is not runtime evidence. Report UNVERIFIED if metadata is unavailable
-and ask the user to confirm the child session model before a larger run. Do not
-claim savings or routing success based on static configuration alone.
+textual claim is not runtime evidence. If runtime metadata is unavailable from the host,
+report UNVERIFIED in the report footer without blocking task execution. Do not halt
+normal workflow merely because runtime model metadata is unexposed. Proceed with the
+assigned task using configured Flash workers. Do not claim savings or routing success
+based on static configuration alone.
 
 ## Safety and reporting
 

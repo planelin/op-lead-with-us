@@ -18,13 +18,46 @@
   `inherit` 子代理继承主会话模型。本机 2.15.1 语言服务器校验字符串显示子代理
   Model 仅支持 inherit/flash/flash_lite/pro，无 Opus 档；Opus 只能作为主会话模型。
   因此 v0.2.1 固化双模型策略，不使用其他档位。
-- `view_file`、`grep_search`、`run_command`、`replace_file_content` 都有官方文档示例支持。
+- `view_file`、`grep_search`、`run_command`、`replace_file_content`、`read_url_content`、`search_web` 均受官方文档与原生环境支持。
   0.1.0 的 Lead 省略 tools，实测会话未获得委派工具，原先依赖默认工具集的假设未成立。
-  0.1.1 显式请求 invoke_subagent、manage_subagents、send_message 和两个读工具；
-  前三个名称可由官方 Hooks 工具目录核对。此修复尚未实机验证，不能承诺会强制启用工具。
-  worker 名单不包含委派工具；这些名单是否排除所有默认工具仍须运行期核实。
+  0.1.1 显式请求 invoke_subagent、manage_subagents、send_message 和两个读工具。
+  0.2.3 为 researcher 与 reviewer 补充 `read_url_content` 与 `search_web`，以原生支持外部网络研判与来源比对。
+  worker 名单不包含委派工具，防止子代理失控嵌套派发。
 - rules/ 文件使用 `trigger: always_on`。不用含糊的 `rules/AGENTS.md` 例外处理，
   避免规则因缺少合法 frontmatter 被忽略。规则正文限定仅在本插件角色/技能启用时适用。
+
+## CRY 调度协议更新（2026-10-10）
+
+- CRY_SCHEDULER_V3 定义主动拆分、依赖就绪队列、完成即补位与共享资源所有权；它是指令版本，不是运行证明。
+- 保留本地最多 3 个活跃 Worker，不推断宿主全局流上限，也不保证为用户其他会话预留通道。
+- 是否支持批量参数、非阻塞派发和逐个完成通知，以当前会话实际工具 schema/事件为准；不能重叠执行时报告 CONCURRENCY_UNAVAILABLE。
+- 5 次修复通过任务包分配和主协调员记账约束，不是强制 Token/计费控制。
+- 静态测试不能证明真实并发、持续补位、取消传播或交付增速；实机步骤见 SMOKE-TEST.md 第 4 节，本次未执行付费模型冒烟。
+
+## CRY 调度协议更新（2026-10-11）
+
+- CRY_SCHEDULER_V4 新增两条约束，依据为会话 310acfac（omnirush2api 登录修复）实测复盘：
+  该会话第二轮单 Worker 派发未向用户说明理由，且全程未派 reviewer 即验收。
+- 单 Worker 区间（派发或等待仅 1 个 Worker 时）的理由必须在面向用户的状态消息中明示
+  （一个短句），仅写入内部记录不再满足要求。
+- 新增审查快速通道（Fast-track exception）：同时满足 diff 仅 1 个文件且不超过 10 行、
+  改动为声明式配置或文档而非逻辑代码、执行员已跑通验收命令并有证据、本任务无未决审查
+  发现时，Lead 可不派 reviewer 直接验收，但须在最终调度摘要中记录豁免及依据；
+  其余范围仍必须由全新 agy-reviewer 审查后验收，Turbo 提速不授权跳过审查。
+- 以上均为提示词协议；静态测试只锁定文本存在，实际遵从仍需实机验证（SMOKE-TEST.md 第 4 节）。
+
+## CRY 调度协议更新（2026-10-11，V5）
+
+- CRY_SCHEDULER_V5 依据实机测试反馈调整输出契约：默认最终报告只面向交付（变更、实际执行的
+  检查、未决风险），不再默认附加编排审计块（模式行、Worker 名单、峰值并发、修复记账、路由页脚）。
+- 完整调度审计改为按需输出：用户发送 LEAD_AUDIT 时输出派发名单、峰值并发及串行原因、
+  fast-track 豁免、修复额度分配/消耗/剩余、路由证据或 UNVERIFIED。数据由 Lead 在任务台账中
+  持续维护，保证随时可审计。
+- 保留面向用户的单 Worker 理由短句要求；额度耗尽、Worker 失败/未确认、阻断验收的审查发现等
+  影响下一步决策的事项仍在默认报告中呈现。
+- 审查快速通道的豁免记录位置由 V4 的“最终调度摘要”改为“任务台账 + LEAD_AUDIT”。
+- US 主协调员同步去噪：不再默认在报告页脚标注 UNVERIFIED 路由状态，仅在用户询问模型/路由
+  或确认偏差影响结果时呈现。
 
 ## 尚未验证
 

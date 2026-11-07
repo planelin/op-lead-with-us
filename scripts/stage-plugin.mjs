@@ -1,4 +1,4 @@
-import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync, rmSync } from 'node:fs';
 import { join, resolve, relative, sep, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
@@ -38,10 +38,27 @@ export function stagePlugin(root = projectRoot) {
   const target = join(root, '.agents', 'plugins', 'op-lead-with-us');
   guardPath(root, target);
   const targetMarker = join(target, marker);
-  const prior = existsSync(targetMarker) ? JSON.parse(readFileSync(targetMarker, 'utf8')) : null;
+  let prior = null;
+  if (existsSync(targetMarker)) {
+    try {
+      prior = JSON.parse(readFileSync(targetMarker, 'utf8'));
+    } catch {
+      assert(false, 'Invalid staging manifest');
+    }
+  }
   if (prior) assert(prior.format === 1 && prior.files && typeof prior.files === 'object', 'Invalid staging manifest');
+  // Preflight retired files as well as current payloads before mutating anything.
+  // A manifest entry proves prior ownership, not that the user left the file untouched.
+  const previouslyManaged = new Set(prior ? Object.keys(prior.files) : []);
+  const retired = [];
   for (const file of walkFiles(target)) {
-    assert(file === marker || packageFiles.includes(file), `Unexpected staged file; not deleting it: ${file}`);
+    if (file === marker || packageFiles.includes(file)) continue;
+    assert(previouslyManaged.has(file), `Unexpected staged file; not deleting it: ${file}`);
+    const destination = join(target, file);
+    guardPath(root, destination);
+    assert(hash(readFileSync(destination)) === prior.files[file],
+      `Refusing to delete locally changed retired staged file: ${file}`);
+    retired.push(destination);
   }
   const payload = new Map();
   // Complete preflight before making any writes; never overwrite user-modified assets.
@@ -56,6 +73,8 @@ export function stagePlugin(root = projectRoot) {
       assert(existingHash === hash(source) || existingHash === prior?.files[file], `Refusing to overwrite locally changed staged file: ${file}`);
     }
   }
+  // All conflicts have now been checked, including files that will be retired.
+  for (const destination of retired) rmSync(destination);
   mkdirSync(target, { recursive: true });
   const hashes = {};
   for (const [file, source] of payload) {

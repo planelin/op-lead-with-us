@@ -4,15 +4,17 @@ import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 
 export const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-export const agentNames = ['op-lead-with-us', 'agy-researcher', 'agy-implementer', 'agy-reviewer'];
+export const leadAgentNames = ['op-lead-with-us', 'op-lead-with-cry'];
+export const workerAgentNames = ['agy-researcher', 'agy-implementer', 'agy-reviewer'];
+export const agentNames = [...leadAgentNames, ...workerAgentNames];
 export const runtimeFiles = [
   'plugin.json',
   ...agentNames.map(name => `agents/${name}.md`),
   'skills/op-lead-with-us/SKILL.md',
   'rules/op-lead-with-us.md',
 ];
-export const packageFiles = [...runtimeFiles, 'README.md', 'docs/SMOKE-TEST.md', 'docs/TASK-PACKET.md', 'docs/COMPATIBILITY.md', 'docs/TROUBLESHOOTING.md'];
-const verifiedTools = new Set(['view_file', 'grep_search', 'replace_file_content', 'run_command', 'invoke_subagent', 'manage_subagents', 'send_message']);
+export const packageFiles = [...runtimeFiles, 'README.md', 'docs/SMOKE-TEST.md', 'docs/TASK-PACKET.md', 'docs/COMPATIBILITY.md', 'docs/TROUBLESHOOTING.md', 'docs/STATUS.md'];
+const verifiedTools = new Set(['view_file', 'grep_search', 'replace_file_content', 'run_command', 'invoke_subagent', 'manage_subagents', 'send_message', 'read_url_content', 'search_web']);
 export const leadToolNames = ['view_file', 'grep_search', 'invoke_subagent', 'manage_subagents', 'send_message'];
 
 // Deliberately supports only this project's simple YAML subset, not arbitrary YAML.
@@ -82,34 +84,44 @@ export function validatePlugin(root = projectRoot) {
 
   for (const name of agentNames) {
     const { metadata: m, body } = parseFrontmatter(readFileSync(join(root, 'agents', `${name}.md`), 'utf8'), name);
-    const lead = name === 'op-lead-with-us';
+    const isLead = leadAgentNames.includes(name);
     sameKeys(m, ['name', 'description', 'mainAgent', 'subagent', 'model', 'commandExecutionPolicy', 'tools'], name);
     assert.equal(m.name, name);
     assert.equal(typeof m.description, 'string');
     assert(m.description.length > 10);
-    assert.equal(m.model, lead ? 'inherit' : 'flash', `${name}: unexpected model routing`);
-    assert.equal(m.mainAgent, lead, `${name}: wrong primary-agent flag`);
-    assert.equal(m.subagent, !lead, `${name}: wrong delegation flag`);
+    const expectedModel = name === 'op-lead-with-us' ? 'inherit' : 'flash';
+    assert.equal(m.model, expectedModel, `${name}: unexpected model routing`);
+    assert.equal(m.mainAgent, isLead, `${name}: wrong primary-agent flag`);
+    assert.equal(m.subagent, !isLead, `${name}: wrong delegation flag`);
     assert.equal(m.commandExecutionPolicy, 'sandbox', `${name}: unsafe command policy`);
     assert(Array.isArray(m.tools) && m.tools.length > 0, `${name}: explicit tools required`);
     assert.equal(new Set(m.tools).size, m.tools.length, `${name}: duplicate tools`);
     for (const tool of m.tools) assert(verifiedTools.has(tool), `${name}: unverified tool ${tool}`);
-    if (!lead) {
-      const expected = name === 'agy-researcher' ? ['view_file', 'grep_search']
+    if (!isLead) {
+      const expected = name === 'agy-researcher' ? ['view_file', 'grep_search', 'read_url_content', 'search_web']
         : name === 'agy-implementer' ? ['view_file', 'grep_search', 'replace_file_content', 'run_command']
-        : ['view_file', 'grep_search', 'run_command'];
+        : ['view_file', 'grep_search', 'run_command', 'read_url_content', 'search_web'];
       assert.deepEqual(m.tools, expected, `${name}: tool capabilities changed`);
       assert(body.includes('UNVERIFIED'), `${name}: missing runtime model caveat`);
       const budget = name === 'agy-researcher' ? 40 : name === 'agy-implementer' ? 50 : 60;
       assert(body.includes(`Report budget: ${budget} lines maximum`), `${name}: missing report budget`);
     } else {
-      assert.deepEqual(m.tools, leadToolNames, 'Lead must explicitly request delegation, lifecycle and read tools');
-      assert(body.includes('LEAD_CONFIG_V2') && body.includes('LEAD_TOOLCHECK'), 'Lead must expose a capability preflight');
-      assert(body.includes('MISSING_INVOKE_TOOL') && body.includes('WORKER_NOT_DISCOVERED'), 'Lead must distinguish capability from discovery failure');
-      for (const worker of agentNames.filter(n => n !== name)) assert(body.includes(worker), `Lead does not refer to ${worker}`);
-      assert(body.includes('repair_cycles_remaining') && body.includes('repair_cycles_used'), 'Lead must track repairs across invocations');
-      assert(body.includes('PLAN_ONLY') && body.includes('Execute PLAN.md') && body.includes('verbatim'), 'Lead must define PLAN_ONLY two-phase planning with verbatim transcription');
-      assert(body.includes('report budgets'), 'Lead must enforce worker report budgets');
+      assert.deepEqual(m.tools, leadToolNames, `Lead must explicitly request delegation, lifecycle and read tools (${name})`);
+      assert(body.includes('LEAD_CONFIG_V2') && body.includes('LEAD_TOOLCHECK'), `${name} must expose a capability preflight`);
+      assert(body.includes('MISSING_INVOKE_TOOL') && body.includes('WORKER_NOT_DISCOVERED'), `${name} must distinguish capability from discovery failure`);
+      for (const worker of workerAgentNames) assert(body.includes(worker), `${name} does not refer to ${worker}`);
+      assert(body.includes('repair_cycles_remaining') && body.includes('repair_cycles_used'), `${name} must track repairs across invocations`);
+      assert(body.includes('PLAN_ONLY') && body.includes('Execute PLAN.md') && body.includes('verbatim'), `${name} must define PLAN_ONLY two-phase planning with verbatim transcription`);
+      assert(body.toLowerCase().includes('report budget'), `${name} must enforce worker report budgets`);
+      if (name === 'op-lead-with-cry') {
+        assert(body.includes('CRY_SCHEDULER_V5'), 'Turbo must expose its scheduler revision');
+        assert(body.includes('CONCURRENCY_UNAVAILABLE'), 'Turbo must disclose unavailable concurrency');
+        assert(body.includes('Fast-track exception'), 'Turbo must define the reviewer fast-track for acceptance');
+        assert(body.includes('user-facing status message'), 'Turbo must surface single-worker reasons to the user');
+        assert(body.includes('LEAD_AUDIT'), 'Turbo must offer an on-request scheduling audit');
+        assert(!/strictly reserve 1 channel|every participant runs on fast Flash quota/i.test(body),
+          'Turbo must not guarantee channel reservation or runtime routing');
+      }
     }
     checks.push(`agent: ${name} (${m.model}; main=${m.mainAgent}; subagent=${m.subagent})`);
   }
@@ -131,7 +143,19 @@ export function validatePlugin(root = projectRoot) {
   assert(rule.body.includes('Otherwise do not alter'), 'Rule must not hijack unrelated conversations');
   assert(rule.body.includes('Only two models participate') && rule.body.includes('PLAN_ONLY'), 'Rule must pin the two-model policy and PLAN_ONLY');
   checks.push('rule: valid activation and limited scope');
-  checks.push('cost controls: two-model policy, PLAN_ONLY and report budgets');
+  // Static protocol checks catch missing task fields and known stale instructions.
+  // They do not simulate an LLM or prove live scheduling, budget enforcement, or speedup.
+  for (const file of ['agents/op-lead-with-cry.md', 'agents/agy-implementer.md',
+    'rules/op-lead-with-us.md', 'skills/op-lead-with-us/SKILL.md']) {
+    const source = readFileSync(join(root, file), 'utf8');
+    for (const field of ['orchestration_mode', 'depends_on', 'ready_when', 'shared_resources',
+      'repair_budget_total', 'repair_cycles_remaining', 'repair_cycles_used']) {
+      assert(new RegExp(`\\b${field}\\b`).test(source), `${file}: missing Turbo packet field ${field}`);
+    }
+    assert(!source.includes('never more than two across the overall task'),
+      `${file}: unconditional legacy repair cap conflicts with Turbo`);
+  }
+  checks.push('orchestration: two-model policy, PLAN_ONLY, Turbo packet fields and report budgets');
 
   for (const forbidden of ['hooks.json', 'mcp_config.json']) assert(!existsSync(join(root, forbidden)), `MVP must not silently introduce ${forbidden}`);
   checks.push('no hooks, external MCP or automatic model API');

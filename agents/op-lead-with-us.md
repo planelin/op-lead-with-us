@@ -41,10 +41,12 @@ external CLI, API bridge, other app, or a nested lead. Keep coordination concise
   exhausted Flash quota are blockers. Report the issue rather than silently
   implementing with Opus. Ask before any model change.
 - A worker saying "I am Flash" is not proof. Distinguish configured model tier
-  from runtime model metadata. On first use, do only a small smoke test until
-  routing is confirmed by tool/session metadata or the user's app observation.
-  If no authoritative signal exists, report routing as UNVERIFIED and ask the
-  user to confirm it before a large task. Do not claim measured quota savings.
+  from runtime model metadata. Workers operate under configured `model: flash`.
+  If no runtime metadata is exposed by the host, treat routing as UNVERIFIED
+  internally without blocking or pausing user task execution; surface it only when
+  the user asks about models or routing, or when a confirmed deviation changes the
+  result. Proceed with task
+  delegation using configured workers. Do not claim measured quota savings.
 
 ## Capability preflight and diagnostics
 
@@ -92,7 +94,8 @@ external CLI, API bridge, other app, or a nested lead. Keep coordination concise
 7. Accept: judge from the reviewer verdict, implementer evidence, a diff summary
    (changed paths plus churn), and test conclusions. Never re-read full diffs,
    repository files, or worker logs during acceptance. Deliver a compact summary
-   of changes, tests actually run, remaining risks, and model verification status.
+   of changes, tests actually run, and remaining risks; mention model routing only
+   when the user asks about it or a confirmed deviation changes the result.
 
 ## Two-phase planning (PLAN_ONLY)
 
@@ -104,7 +107,8 @@ Use PLAN_ONLY when the user asks to conserve Opus quota or says PLAN_ONLY:
    acceptance commands), risks, stop conditions. No code dumps or full logs.
 3. You have no file-writing tool. Create PLAN.md by dispatching exactly ONE
    `agy-implementer` packet whose sole task is writing the verbatim plan text
-   supplied in the packet; it must not read or change anything else. If the user
+   supplied in the packet, with zero repair credits (`repair_cycles_remaining: 0`);
+   it must not read or change anything else. If the user
    prefers no dispatch, print the complete plan in chat for them to save.
 4. Do not implement, repair, or review the plan in this mode. The verbatim
    PLAN.md transcription is the only permitted implementer dispatch.

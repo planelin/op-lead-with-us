@@ -11,15 +11,16 @@
 | 角色 | 对应 Agent 文件 | 运行模型 | 核心职责 |
 | :--- | :--- | :--- | :--- |
 | **主架构师 (Lead)** | `op-lead-with-us` | **Claude Opus 5.5** (`inherit`) | 需求理解、任务拆解、制定任务包、最终验收与交付。不亲自写琐碎代码。 |
+| **极速协调员 (Turbo Lead)** | `op-lead-with-cry` | **Gemini 3.8 Flash**（手动选择，`flash`） | v0.3.0 新增：主动拆分、并发派发、完成即补位；全体 Worker 共享 5 次修复额度，本地最多 3 个活跃 Worker。选择该模式表示接受更高额度消耗。 |
 | **调研员 (Researcher)** | `agy-researcher` | **Gemini Flash** (`flash`) | 快速检索代码库、定位关键接口与依赖约束。纯只读权限，不修改代码。 |
-| **执行员 (Implementer)** | `agy-implementer` | **Gemini Flash** (`flash`) | 依据任务包进行代码编写、文件替换、执行本地测试，最多 2 轮自主纠错。 |
+| **执行员 (Implementer)** | `agy-implementer` | **Gemini Flash** (`flash`) | 依据任务包进行代码编写、文件替换、执行本地测试，遵守分配的修复额度（默认模式最多 2 轮自主纠错）。 |
 | **审查员 (Reviewer)** | `agy-reviewer` | **Gemini Flash** (`flash`) | 独立审查 Git 变更与实现证据，核对逻辑漏洞与安全风险，提出最小修复建议。 |
 
 ### 会话级模型选择（只用两个模型）
 
 | 会话类型 | 主模型选择 | 说明 |
 | :--- | :--- | :--- |
-| 简单任务 / PLAN 执行 | **Gemini 3.8 Flash** | Lead 与 workers 全部走 Flash，Opus 消耗为 0 |
+| 简单任务 / PLAN 执行 | **Gemini 3.8 Flash** | 预期 Lead 与 workers 使用 Flash；实际路由及额度仍需运行证据 |
 | 复杂规划与验收 | **Claude Opus 5.5** | Opus 只做拆解与验收，重活全部 Flash |
 
 ### 两阶段规划（最省 Opus）
@@ -40,11 +41,14 @@
 只需在 Antigravity 桌面端中，**“打开文件夹”选择当前项目目录**，即可直接在本项目中生效。
 
 ### 方式 B：一键全局安装（所有项目随处可用）
-在本项目根目录下打开终端，执行：
+
+**Windows 用户最简单的方式**：直接双击项目根目录的 `install.bat`（需 Node.js 18+），它会检查 Node 版本并执行同样的全局安装；卸载时执行 `install.bat uninstall`。
+
+也可以在本项目根目录下打开终端，执行：
 ```powershell
 npm run install:global
 ```
-该命令会自动将插件同步至系统全局配置目录 `~/.gemini/config/plugins/op-lead-with-us`，并将主 Agent 注册到 `~/.gemini/config/agents/op-lead-with-us.md`。之后你在 Antigravity 打开**任何项目或新建任何对话**，都能直接选用 `op-lead-with-us`！
+该命令会自动将插件同步至系统全局配置目录 `~/.gemini/config/plugins/op-lead-with-us`，并将两位主协调员注册到 `~/.gemini/config/agents/`（`op-lead-with-us.md` 与 `op-lead-with-cry.md`）。之后你在 Antigravity 打开**任何项目或新建任何对话**，都能直接选用它们！
 
 *(若需卸载全局安装，只需运行 `npm run uninstall:global`)*
 
@@ -56,8 +60,9 @@ npm run install:global
    在 Antigravity 左侧侧边栏点击 **New Conversation**（或快捷键 `Ctrl+N`）。
 
 2. **选择角色与模型**：
-   - 在主 Agent 下拉框中，选择 **`op-lead-with-us`**。
-   - 在模型下拉框中，选择你账号可用的 **Claude Opus 5.5**。
+   - 节省主模型额度：Agent 选 **`op-lead-with-us`**，主模型手动选 **Claude Opus 5.5**。
+   - 并发增速：Agent 选 **`op-lead-with-cry`**，主模型手动选 **Gemini Flash**；选择该模式表示接受更高消耗。
+   - 插件不自动切换或验证主模型；当前实现与旧版 US 限制见 [状态报告](STATUS.md)。
 
 3. **发送任务**：
    直接像平常一样向 AI 提出你的需求，例如：
