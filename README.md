@@ -142,6 +142,11 @@ npm run install:global
 
 * **Windows 快捷安装**：直接双击运行仓库根目录下的 [`install.bat`](./install.bat)（需 Node.js 18+）；运行 `install.bat uninstall` 即可一键卸载。
 
+**Ubuntu/WSL 工作区**：插件跟随运行 Agent 后端的宿主机。如果 Antigravity 进程带
+`--wsl-distro=Ubuntu`，即使 GUI 在 Windows 上，仍须在同一 WSL distro 执行
+`npm run install:global`；Windows 的全局配置对 Ubuntu 后端不可见。
+详细的宿主判断和验收步骤见 [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md)。
+
 #### 2. 在 Antigravity 中使用
 
 1. 启动或重启 **Antigravity 2.0+**。
@@ -201,6 +206,9 @@ npm run install:global
 ```
 
 * **Windows Users**: Double-click [`install.bat`](./install.bat) to install globally, or run `install.bat uninstall` to remove.
+* **Ubuntu/WSL**: When the Agent backend runs in Ubuntu, run `npm run stage` or
+  `npm run install:global` from `/mnt/n/<repo>` (or the actual Linux-mounted project path).
+  A Windows GUI with `--wsl-distro=Ubuntu` still uses the Ubuntu plugin configuration.
 * **In Antigravity**: Start a new conversation (`Ctrl+N`), pick **`op-lead-with-us`** (Oblivion Mode / Super-Agent) or **`argon-for-gdnsyt`** (More Mode / Classic Quota Saver), and send your request.
 
 ---
