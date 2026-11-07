@@ -205,6 +205,13 @@ npm run install:global
 
 ---
 
-## 📄 License
+## 🤝 社区与友链
 
-Released under the [MIT License](./LICENSE).
+本项目首发并活跃于 **[LINUX DO](https://linux.do)** 技术社区：
+- **论坛交流**：[LINUX DO (https://linux.do)](https://linux.do)
+
+---
+
+## License
+
+Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
