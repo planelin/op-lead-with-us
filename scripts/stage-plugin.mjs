@@ -1,5 +1,5 @@
 import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync, rmSync } from 'node:fs';
-import { join, resolve, relative, sep, dirname } from 'node:path';
+import { join, resolve, relative, sep, dirname, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import assert from 'node:assert/strict';
@@ -10,7 +10,10 @@ const marker = '.op-lead-with-us-stage.json';
 
 function guardPath(root, target) {
   const rel = relative(root, target);
-  assert(rel && rel !== '..' && !rel.startsWith(`..${sep}`) && !resolve(target).startsWith('\\\\'), 'Stage target must be below the workspace');
+  // `relative()` returns an absolute path when roots are on different drives.
+  // Reject that escape, while allowing a valid UNC/WSL root such as
+  // `\\wsl.localhost\Ubuntu\mnt\n\repo`.
+  assert(rel && rel !== '..' && !rel.startsWith(`..${sep}`) && !isAbsolute(rel), 'Stage target must be below the workspace');
   let current = root;
   assert(!lstatSync(current).isSymbolicLink(), 'Refusing symlink workspace');
   for (const segment of rel.split(sep)) {

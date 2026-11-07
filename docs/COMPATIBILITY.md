@@ -26,6 +26,31 @@
 - rules/ 文件使用 `trigger: always_on`。不用含糊的 `rules/AGENTS.md` 例外处理，
   避免规则因缺少合法 frontmatter 被忽略。规则正文限定仅在本插件角色/技能启用时适用。
 
+## Ubuntu/WSL 与 GUI 的宿主边界（2026-11-07）
+
+插件跟随运行 `agy`/Antigravity 的宿主机加载。GUI 显示或连接到
+`/mnt/n/<repo>` 这样的 Ubuntu/WSL 工作区，不会把 Windows 宿主的全局插件目录
+自动复制到 Linux 的 `$HOME`，也不会把 Linux 的插件安装自动注册到 Windows GUI。
+本轮调研观察到 Antigravity 进程带有 `--wsl-distro=Ubuntu`；Windows 全局目录有插件，
+而 Ubuntu 的 `~/.gemini/config/plugins` 为空，这正是“安装宿主不一致”的表现。
+
+- **Windows GUI + Ubuntu 后端**：如果 Antigravity 进程带有 `--wsl-distro=Ubuntu`，
+  Agent 后端读取的是 Ubuntu 的 `$HOME/.gemini/config`。必须在同一 WSL distro
+  中执行 `npm run install:global`；Windows 的 `%USERPROFILE%\.gemini\config`
+  对该后端不可见。只有 Agent 后端实际运行在 Windows 时，才使用 Windows 配置目录。
+- **Linux/Ubuntu 上运行 agy**：在 Ubuntu 工作区（例如 `/mnt/n/<repo>`）执行
+  `npm run stage` 或 `npm run install:global`，然后从同一 Linux 宿主启动/重载 agy。
+  `stage` 只写当前工作区的 `.agents/plugins/op-lead-with-us`；Settings/Agent
+  选择器通常需要全局安装，不能只依赖 workspace staging。
+- **远程云端 Agent**：云端会话不读取本机插件。若 GUI 只是远程控制另一台主机，
+  插件必须安装在实际运行 agy 的那台主机。
+
+验证时同时记录 `pwd`、`node -p "process.cwd()"`、`agy plugin list`（若该 CLI 可用）
+以及实际显示插件的宿主。若 GUI 已安装的版本与源码版本不同，先重新运行安装并确认
+`plugin.json`、`package.json` 和 Agent 文件来自同一份源码，避免把旧副本误判为适配失败。
+当前仓库是 `0.3.0`；若 Windows 全局副本已经升级到包含 `mcp/` 的 `0.4.0`，不要直接
+用旧源码覆盖它，先确定要迁移的正式版本。
+
 ## CRY 调度协议更新（2026-10-10）
 
 - CRY_SCHEDULER_V3 定义主动拆分、依赖就绪队列、完成即补位与共享资源所有权；它是指令版本，不是运行证明。

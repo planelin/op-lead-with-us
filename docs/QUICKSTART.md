@@ -52,6 +52,26 @@ npm run install:global
 
 *(若需卸载全局安装，只需运行 `npm run uninstall:global`)*
 
+### Ubuntu/WSL 工作区
+
+插件安装位置取决于运行 Antigravity/agy 的宿主，而不是 GUI 当前显示的目录。
+如果 Antigravity 进程使用 `--wsl-distro=Ubuntu`，即使 GUI 在 Windows 上运行，
+Agent 后端仍读取 Ubuntu 的 `$HOME/.gemini/config`。此时必须在 WSL 中执行安装；
+Windows 的 `%USERPROFILE%\.gemini\config` 不会被该后端读取。
+
+如果 agy 确实在 Ubuntu 上运行，则在同一个 Linux 工作区执行：
+
+```bash
+cd /mnt/n/<repo>
+npm run stage
+# 或：npm run install:global
+```
+
+然后从同一 Ubuntu 宿主重载 agy。`npm run stage` 只生成当前项目的
+`.agents/plugins/op-lead-with-us/`，适合工作区级发现测试；Settings/Agent 选择器
+通常需要再运行 `npm run install:global`，把插件写入该 Linux 用户的
+`~/.gemini/config/`。Windows 的 `install.bat` 仅适用于 Windows 后端。
+
 ---
 
 ## 🎯 桌面端实操三步法

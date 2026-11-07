@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { projectRoot, packageFiles, parseFrontmatter, validatePlugin } from '../scripts/validate.mjs';
 import { stagePlugin } from '../scripts/stage-plugin.mjs';
 import { planTurboRename } from '../scripts/install-global.mjs';
+import { writeZipArchive } from '../scripts/package.mjs';
 import { createHash } from 'node:crypto';
 
 // Intentionally no recursive deletion. Small, unique test fixtures are left in OS temp.
@@ -22,7 +23,38 @@ function rewrite(root, file, fn) {
   writeFileSync(path, fn(readFileSync(path, 'utf8')));
 }
 
+function zipEntryNames(archive) {
+  const endSignature = Buffer.from([0x50, 0x4b, 0x05, 0x06]);
+  const end = archive.lastIndexOf(endSignature);
+  assert(end >= 0, 'ZIP end record is missing');
+  const count = archive.readUInt16LE(end + 10);
+  let cursor = archive.readUInt32LE(end + 16);
+  const names = [];
+  for (let index = 0; index < count; index += 1) {
+    assert.equal(archive.readUInt32LE(cursor), 0x02014b50, 'ZIP central record is invalid');
+    const nameLength = archive.readUInt16LE(cursor + 28);
+    const extraLength = archive.readUInt16LE(cursor + 30);
+    const commentLength = archive.readUInt16LE(cursor + 32);
+    names.push(archive.subarray(cursor + 46, cursor + 46 + nameLength).toString('utf8'));
+    cursor += 46 + nameLength + extraLength + commentLength;
+  }
+  return names;
+}
+
 test('source plugin validates', () => assert.equal(validatePlugin().checks.length, 10));
+test('Node ZIP writer creates portable archives without staging metadata', () => {
+  const root = mkdtempSync(join(tmpdir(), 'op-zip-test-'));
+  mkdirSync(join(root, 'nested'));
+  writeFileSync(join(root, 'plugin.json'), '{}');
+  writeFileSync(join(root, 'nested', 'hello.txt'), 'hello\n');
+  writeFileSync(join(root, '.op-lead-with-us-stage.json'), '{"internal":true}\n');
+  const archivePath = join(root, 'plugin.zip');
+  writeZipArchive(root, archivePath);
+  writeZipArchive(root, archivePath);
+  const names = zipEntryNames(readFileSync(archivePath));
+  assert.deepEqual(names, ['nested/hello.txt', 'plugin.json']);
+  assert(!names.includes('.op-lead-with-us-stage.json'));
+});
 test('CRLF frontmatter is supported', () => {
   const source = readFileSync(join(projectRoot, 'agents/agy-researcher.md'), 'utf8').replace(/\r?\n/g, '\r\n');
   assert.equal(parseFrontmatter(source).metadata.model, 'flash');
@@ -52,7 +84,7 @@ test('unknown tool names are rejected', () => {
 });
 test('researcher cannot acquire shell access', () => {
   const root = fixture();
-  rewrite(root, 'agents/agy-researcher.md', s => s.replace('  - grep_search', '  - grep_search\n  - run_command'));
+  rewrite(root, 'agents/agy-researcher.md', s => s.replace(/  - grep_search\r?\n/, '  - grep_search\n  - run_command\n'));
   assert.throws(() => validatePlugin(root), /tool capabilities changed/);
 });
 test('invalid rule trigger is rejected', () => {
@@ -110,17 +142,17 @@ test('lead has explicit native delegation and lifecycle tools', () => {
 });
 test('lead missing invoke_subagent is rejected', () => {
   const root = fixture();
-  rewrite(root, 'agents/op-lead-with-us.md', s => s.replace('  - invoke_subagent\n', ''));
+  rewrite(root, 'agents/op-lead-with-us.md', s => s.replace(/  - invoke_subagent\r?\n/, ''));
   assert.throws(() => validatePlugin(root), /Lead must explicitly request/);
 });
 test('lead missing lifecycle management is rejected', () => {
   const root = fixture();
-  rewrite(root, 'agents/op-lead-with-us.md', s => s.replace('  - manage_subagents\n', ''));
+  rewrite(root, 'agents/op-lead-with-us.md', s => s.replace(/  - manage_subagents\r?\n/, ''));
   assert.throws(() => validatePlugin(root), /Lead must explicitly request/);
 });
 test('lead cannot regress to implicit default tools', () => {
   const root = fixture();
-  rewrite(root, 'agents/op-lead-with-us.md', s => s.replace(/tools:\n(?:  - [a-z_]+\n)+/, ''));
+  rewrite(root, 'agents/op-lead-with-us.md', s => s.replace(/tools:\r?\n(?:  - [a-z_]+\r?\n)+/, ''));
   assert.throws(() => validatePlugin(root), /unsupported or missing keys/);
 });
 test('worker cannot gain native delegation tools', () => {
