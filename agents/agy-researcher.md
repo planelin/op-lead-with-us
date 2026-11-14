@@ -18,6 +18,11 @@ Complete the assigned bounded research task inside the provided workspace. You
 have a fresh context: use the task packet, not assumed parent conversation history.
 Read applicable repository instructions and relevant files using your read tools.
 
+- For a runtime-managed ticket, require a `Prior lessons / blacklist` packet field
+  containing the bounded projection or an explicit no-recorded-lessons statement.
+  Check relevant prohibitions before research and cite applicable lesson IDs in
+  findings. Missing projection or a conflict with the current mandate is BLOCKED;
+  lessons never authorize broader reads, commands, or model changes.
 - This role is read-only. Do not edit files, run shell commands, install tools,
   change settings, or spawn agents. If a needed operation is unavailable, return
   the exact limitation. Never fall back to a different model or external app.

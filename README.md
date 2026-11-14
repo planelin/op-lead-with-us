@@ -1,27 +1,26 @@
 <p align="center">
-  <img src="assets/banner.svg" width="100%" alt="op-lead-with-us">
+  <img src="assets/pixel/banner.png" width="100%" alt="op-lead-with-us" />
 </p>
 
 <p align="center">
-   <a href="#简体中文">简体中文 |<a href="#-english">English</a></a>
+  <a href="#cn">简体中文</a> · <a href="#en">English</a>
 </p>
 
 <p align="center">
-  <a href="https://antigravity.google"><img src="https://img.shields.io/badge/platform-Google%20Antigravity-4285F4?style=flat-square&logo=google" alt="Antigravity"></a>
-  <img src="https://img.shields.io/badge/lead-Claude%20Opus%205.5-D97706?style=flat-square&logo=anthropic" alt="Claude Opus">
-  <img src="https://img.shields.io/badge/workers-Gemini%203.8%20Flash-34A853?style=flat-square&logo=google" alt="Gemini Flash">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="MIT License"></a>
-  <img src="https://img.shields.io/badge/dependencies-zero%20external-7C3AED?style=flat-square" alt="Zero Dependencies">
+  <a href="https://antigravity.google"><img src="https://img.shields.io/badge/platform-Google%20Antigravity-A0C4FF?style=flat-square&labelColor=3B2866&logo=google&logoColor=white" alt="Antigravity" /></a>
+  <img src="https://img.shields.io/badge/lead-Claude%20Opus%205.5-FF7EB6?style=flat-square&labelColor=3B2866&logo=anthropic&logoColor=white" alt="Claude Opus" />
+  <img src="https://img.shields.io/badge/workers-Gemini%203.8%20Flash-8EECBC?style=flat-square&labelColor=3B2866&logo=google&logoColor=white" alt="Gemini Flash" />
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-FFD166?style=flat-square&labelColor=3B2866" alt="MIT License" /></a>
+  <img src="https://img.shields.io/badge/dependencies-zero%20external-9E47E4?style=flat-square&labelColor=3B2866" alt="Zero Dependencies" />
 </p>
 
-
 <p align="center">
-  <b><a href="#quick-start">Quick Start</a> · <a href="#what--why">Why</a> · <a href="#roles">Roles</a> · <a href="#architecture">Architecture</a> · <a href="#license">License</a></b>
+  <b><a href="#quick-start">Quick Start</a> · <a href="#core-modes">Core Modes</a> · <a href="#roles">Roles</a> · <a href="#en">English</a> · <a href="#license">License</a></b>
 </p>
 
 ---
 
-<a name="-简体中文"></a>
+<a id="cn"></a>
 
 ## 🇨🇳 简体中文
 
@@ -31,13 +30,13 @@
 
 ---
 
-### ✨ 核心模式一览
+<a id="core-modes"></a>
 
-#### 1. `op-lead-with-us`（遗忘模式 / Oblivion Mode）—— 全新 Super-Agent 架构 🌟
+### <img src="assets/pixel/icon-modes.png" width="24" align="absmiddle" alt="" /> 核心模式一览
 
-<p align="left">
-  <img src="./assets/mascot.svg" width="96" align="right" alt="Oblivion Mode Mascot" />
-</p>
+#### 1. `op-lead-with-us`（遗忘模式 / Oblivion Mode）—— 全新 Super-Agent 架构
+
+<img src="assets/pixel/mascot.png" width="96" align="right" alt="Oblivion Mode Mascot" />
 
 > **核心理念：解放人类注意力，忘掉繁琐的多窗口切换与上下文管理，使你不惧遗忘。**
 
@@ -70,13 +69,13 @@
      (Research) (Implem)  (Review)     (Research) (Implem)  (Review)
 ```
 
+<br clear="right" />
+
 ---
 
-#### 2. `argon-for-gdnsyt`（更多模式 / More Mode）—— 经典主从派发架构 🎯
+#### 2. `argon-for-gdnsyt`（更多模式 / More Mode）—— 经典主从派发架构
 
-<p align="left">
-  <img src="./assets/argon-for-gdnsyt.svg" width="96" align="right" alt="More Mode Icon" />
-</p>
+<img src="assets/pixel/argon-graviton.png" width="96" align="right" alt="Argon Graviton Surge Logo" />
 
 > 核心理念：**Argon for 更多你使用它**
 > Огонь по готовности —— **“请随意开火吧！”。**
@@ -104,29 +103,39 @@
        只读代码库与文档调研     受控编辑与单测自修复      独立 Diff 与质量审计
 ```
 
+<br clear="right" />
+
 ---
 
-#### 3. `op-lead-with-cry`（快模式 ）⚡
+#### 3. `op-lead-with-cry`（快模式）
+
+<img src="assets/pixel/cry-turbo.png" width="84" align="right" alt="Turbo Cry Mode Logo" />
 
 * **定位说明**：这是一个以**推进速度**为单一目标的辅助模式（需要浪费额度时可能用得上）。
 * **运行方式**：手动将主会话选为 `Gemini Flash`，主动放弃对 Worker 调用次数的节制，通过依赖感知的任务拆解与多路 Flash 子代理并发扇出换取速度。适合配额充裕、追求快速平推的简单任务。
 
+<br clear="right" />
+
 ---
 
-### 🧩 角色与模型矩阵 (Roles & Personas)
+<a id="roles"></a>
+
+### <img src="assets/pixel/icon-roles.png" width="24" align="absmiddle" alt="" /> 角色与模型矩阵 (Roles & Personas)
 
 | 角色 / 模式 | 标识符 (Identifier) | 推荐模型配置 | 职责与权限边界 |
 | :--- | :--- | :--- | :--- |
-| **遗忘模式 (Super-Agent)** | `op-lead-with-us` | 用户手动选择主模型（L2lead与L3worker一般锁定flash模型） | **super-agent架构**。全局工单路由、持久化状态机管理、跨会话派生独立工单 Lead 并汇总交付。 |
-| **更多模式 (Classic Lead)** | `argon-for-gdnsyt` | 用户手动选择主模型（推荐 **Opus / Argon**） | **经典架构**。单会话内由高阶模型担任总架构师，将脏活累活委派给 Flash 子代理，极致节省主模型配额。 |
-| **快模式 (浪费模式)** | `op-lead-with-cry` | 手动选择 **Gemini Flash** (`model: flash`) | 速度优先的并发扇出调度模式，用更高的子代理调用消耗换取并行推进（辅助特性）。 |
-| **调研员 (Researcher)** | `agy-researcher` | **Gemini Flash** (`flash`) | 只读代码库探索、依赖分析、接口定位与外部文档检索，严禁修改任何代码。 |
-| **实现员 (Implementer)** | `agy-implementer` | **Gemini Flash** (`flash`) | 在限定文件与预算内执行代码编写、运行测试与自修复（支持分支/目录隔离）。 |
-| **审计员 (Reviewer)** | `agy-reviewer` | **Gemini Flash** (`flash`) | 独立审查 Git Diff、测试结果与验收标准匹配度，提供客观放行或驳回结论，只读无写权限。 |
+| <img src="assets/pixel/mascot.png" width="24" align="absmiddle" alt="" /> **遗忘模式 (Super-Agent)** | `op-lead-with-us` | 用户手动选择主模型（L2lead与L3worker一般锁定flash模型） | **super-agent架构**。全局工单路由、持久化状态机管理、跨会话派生独立工单 Lead 并汇总交付。 |
+| <img src="assets/pixel/argon-graviton.png" width="24" align="absmiddle" alt="" /> **更多模式 (Classic Lead)** | `argon-for-gdnsyt` | 用户手动选择主模型（推荐 **Opus / Argon**） | **经典架构**。单会话内由高阶模型担任总架构师，将脏活累活委派给 Flash 子代理，极致节省主模型配额。 |
+| <img src="assets/pixel/cry-turbo.png" width="24" align="absmiddle" alt="" /> **快模式 (浪费模式)** | `op-lead-with-cry` | 手动选择 **Gemini Flash** (`model: flash`) | 速度优先的并发扇出调度模式，用更高的子代理调用消耗换取并行推进（辅助特性）。 |
+| <img src="assets/pixel/role-researcher.png" width="24" align="absmiddle" alt="" /> **调研员 (Researcher)** | `agy-researcher` | **Gemini Flash** (`flash`) | 只读代码库探索、依赖分析、接口定位与外部文档检索，严禁修改任何代码。 |
+| <img src="assets/pixel/role-implementer.png" width="24" align="absmiddle" alt="" /> **实现员 (Implementer)** | `agy-implementer` | **Gemini Flash** (`flash`) | 在限定文件与预算内执行代码编写、运行测试与自修复（支持分支/目录隔离）。 |
+| <img src="assets/pixel/role-reviewer.png" width="24" align="absmiddle" alt="" /> **审计员 (Reviewer)** | `agy-reviewer` | **Gemini Flash** (`flash`) | 独立审查 Git Diff、测试结果与验收标准匹配度，提供客观放行或驳回结论，只读无写权限。 |
 
 ---
 
-### 🚀 快速开始 (Quick Start)
+<a id="quick-start"></a>
+
+### <img src="assets/pixel/icon-quickstart.png" width="24" align="absmiddle" alt="" /> 快速开始 (Quick Start)
 
 #### 1. 全局安装
 
@@ -152,14 +161,14 @@ npm run install:global
 1. 启动或重启 **Antigravity 2.0+**。
 2. 新建对话（`Ctrl+N`）。
 3. 根据你的场景选择对应 Agent：
-   * 选择 **`op-lead-with-us`（遗忘模式）**：开启 Super-Agent 多工单自治工作流，轻松托管复杂与多线任务。
-   * 选择 **`argon-for-gdnsyt`（更多模式）**：手动将主会话模型切换为 **Claude Opus 5.5** 或 **Argon**，享受高阶规划 + Flash 苦力的省配额体验。
-   * *(可选)* 选择 **`op-lead-with-cry`（快模式）**：手动选择 **Gemini Flash** 进行多路并发平推。
+   * <img src="assets/pixel/mascot.png" width="20" align="absmiddle" alt="" /> 选择 **`op-lead-with-us`（遗忘模式）**：开启 Super-Agent 多工单自治工作流，轻松托管复杂与多线任务。
+   * <img src="assets/pixel/argon-graviton.png" width="20" align="absmiddle" alt="" /> 选择 **`argon-for-gdnsyt`（更多模式）**：手动将主会话模型切换为 **Claude Opus 5.5** 或 **Argon**，享受高阶规划 + Flash 苦力的省配额体验。
+   * <img src="assets/pixel/cry-turbo.png" width="20" align="absmiddle" alt="" /> *(可选)* 选择 **`op-lead-with-cry`（快模式）**：手动选择 **Gemini Flash** 进行多路并发平推。
 
 ---
 ---
 
-<a name="-english"></a>
+<a id="en"></a>
 
 ## 🌐 English
 
@@ -169,9 +178,11 @@ In the latest release, the plugin introduces a brand-new **Super-Agent Architect
 
 ---
 
-### ✨ Core Modes
+### <img src="assets/pixel/icon-modes.png" width="24" align="absmiddle" alt="" /> Core Modes
 
-#### 1. `op-lead-with-us` (Oblivion Mode) — Super-Agent Architecture 🌟
+#### 1. `op-lead-with-us` (Oblivion Mode) — Super-Agent Architecture
+
+<img src="assets/pixel/mascot.png" width="96" align="right" alt="Oblivion Mode Mascot" />
 
 > **Philosophy: Free up human attention. Forget session juggling and context pollution.**
 
@@ -181,7 +192,11 @@ Traditional single-session agents often suffer from context rot (when the main a
 * **Durable Ticket Lifecycle & Slot Control**: Tasks are tracked as stateful tickets (`queued`, `working`, `waiting_human`, `completed`, `blocked`) with strict active-slot concurrency caps (`maxActive`) and priority human-reply slots.
 * **Cross-Session Spawning & Model Guardrails**: Each active ticket spawns or resumes an isolated top-level Lead session (enforced with runtime **Flash** model verification and circuit-breaker protection so high-tier quotas are never accidentally drained in the background), which in turn orchestrates `agy-researcher`, `agy-implementer`, and `agy-reviewer` via `invoke_subagent`.
 
-#### 2. `argon-for-gdnsyt` (More Mode) — Classic Main + Subagents Architecture 🎯
+<br clear="right" />
+
+#### 2. `argon-for-gdnsyt` (More Mode) — Classic Main + Subagents Architecture
+
+<img src="assets/pixel/argon-graviton.png" width="96" align="right" alt="Argon Graviton Surge Logo" />
 
 > **Philosophy: Save your frontier model quota so there is *more* of it for you to use.**
 
@@ -191,13 +206,19 @@ Traditional single-session agents often suffer from context rot (when the main a
 * **Two-Phase Planning (`PLAN_ONLY`)**: Generate a compact `PLAN.md` (≤120 lines) with Opus/Argon and stop immediately, then execute the plan in a fresh Flash conversation.
 * **Compressed Evidence**: Worker reports are strictly capped (researcher ≤40 / implementer ≤50 / reviewer ≤60 lines) to keep the main context crystal clear.
 
-#### 3. `op-lead-with-cry` (Turbo / Wasteful Mode) ⚡
+<br clear="right" />
+
+#### 3. `op-lead-with-cry` (Turbo / Wasteful Mode)
+
+<img src="assets/pixel/cry-turbo.png" width="84" align="right" alt="Turbo Cry Mode Logo" />
 
 * **Overview**: A secondary, speed-first mode where the user manually selects **Gemini Flash** as the main model and opts into higher worker consumption for aggressive concurrent fan-out across independent tasks.
 
+<br clear="right" />
+
 ---
 
-### 🛠️ Installation & Usage
+### <img src="assets/pixel/icon-quickstart.png" width="24" align="absmiddle" alt="" /> Installation & Usage
 
 ```powershell
 git clone https://github.com/planelin/op-lead-with-us.git
@@ -213,13 +234,10 @@ npm run install:global
 
 ---
 
-## 🤝 社区与友链
-
-本项目首发并活跃于 **[LINUX DO](https://linux.do)** 技术社区：
-- **论坛交流**：[LINUX DO (https://linux.do)](https://linux.do)
-
----
+<a id="license"></a>
 
 ## License
 
 Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
+
+<sub>社区与友链：[LINUX DO](https://linux.do)</sub>
