@@ -1,11 +1,35 @@
 @echo off
-setlocal DisableDelayedExpansion
-set "OPLWU_INSTALL_BATCH_LAUNCH=1"
-node "%~dp0scripts\install-global.mjs" %*
-set "OPLWU_INSTALL_EXIT_CODE=%ERRORLEVEL%"
-if "%OPLWU_INSTALL_EXIT_CODE%"=="9009" (
-  echo Installer: Node.js 18+ is required and was not found on PATH.
-  echo 安装器需要 Node.js 18+，当前 PATH 中未找到 Node.js。
-  pause
+setlocal EnableExtensions
+chcp 65001 >nul
+set "PYTHONUTF8=1"
+set "PYTHONIOENCODING=utf-8"
+
+set "SCRIPT_DIR=%~dp0"
+set "PY_EXE="
+
+for /d %%D in ("%LOCALAPPDATA%\antigravity\python\*") do (
+  if exist "%%~D\python.exe" (
+    set "PY_EXE=%%~D\python.exe"
+  )
 )
-exit /b %OPLWU_INSTALL_EXIT_CODE%
+
+if not defined PY_EXE (
+  where python >nul 2>nul
+  if not errorlevel 1 (
+    set "PY_EXE=python"
+  )
+)
+
+if not defined PY_EXE (
+  echo [ERROR] Python runtime not found ^(Antigravity bundled python or python on PATH^).
+  if "%~1"=="" pause
+  exit /b 1
+)
+
+"%PY_EXE%" "%SCRIPT_DIR%scripts\install-local.py" %*
+set "EXIT_CODE=%ERRORLEVEL%"
+
+if "%~1"=="" (
+  if not "%EXIT_CODE%"=="0" pause
+)
+exit /b %EXIT_CODE%

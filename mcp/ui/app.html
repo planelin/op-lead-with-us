@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Op Lead With Us — Ticket Tree &amp; Decision Weights</title>
+<style>
+  :root {
+    --bg-1: var(--color-background-primary, #0f1117);
+    --bg-2: var(--color-background-secondary, #171a22);
+    --bg-3: var(--color-background-tertiary, #1f2430);
+    --fg-1: var(--color-text-primary, #eef2f7);
+    --fg-2: var(--color-text-secondary, #a8b3c4);
+    --fg-3: var(--color-text-tertiary, #738096);
+    --bd-1: var(--color-border-primary, rgba(148, 163, 184, 0.22));
+    --bd-2: var(--color-border-secondary, rgba(148, 163, 184, 0.12));
+    --ok-fg: var(--color-text-success, #34d399);
+    --ok-bg: var(--color-background-success, rgba(16, 185, 129, 0.14));
+    --warn-fg: var(--color-text-warning, #fbbf24);
+    --warn-bg: var(--color-background-warning, rgba(245, 158, 11, 0.14));
+    --err-fg: var(--color-text-danger, #f87171);
+    --err-bg: var(--color-background-danger, rgba(239, 68, 68, 0.14));
+    --info-fg: var(--color-text-info, #60a5fa);
+    --info-bg: var(--color-background-info, rgba(59, 130, 246, 0.15));
+    --font: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg-1);
+    color: var(--fg-1);
+    font-family: var(--font);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    gap: 10px;
+    padding: 12px;
+  }
+  .card {
+    background: var(--bg-2);
+    border: 1px solid var(--bd-1);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  select, button {
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--fg-1);
+    background: var(--bg-3);
+    border: 1px solid var(--bd-1);
+    border-radius: 7px;
+    padding: 5px 9px;
+    cursor: pointer;
+  }
+  select:hover, button:hover:not(:disabled) {
+    border-color: var(--info-fg);
+  }
+  button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background: var(--ok-bg);
+    border-color: var(--ok-fg);
+    color: var(--ok-fg);
+    font-weight: 600;
+  }
+  .btn-danger {
+    background: var(--err-bg);
+    border-color: var(--err-fg);
+    color: var(--err-fg);
+    font-weight: 600;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .pill-ok { color: var(--ok-fg); background: var(--ok-bg); border-color: rgba(52, 211, 153, 0.35); }
+  .pill-warn { color: var(--warn-fg); background: var(--warn-bg); border-color: rgba(251, 191, 36, 0.35); }
+  .pill-err { color: var(--err-fg); background: var(--err-bg); border-color: rgba(248, 113, 113, 0.35); }
+  .pill-info { color: var(--info-fg); background: var(--info-bg); border-color: rgba(96, 165, 250, 0.35); }
+  .pill-muted { color: var(--fg-2); background: var(--bg-3); border-color: var(--bd-1); }
+
+  .weights-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .master-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-3);
+    border: 1px solid var(--bd-2);
+    padding: 4px 10px;
+    border-radius: 8px;
+  }
+  .weights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .weight-tile {
+    background: var(--bg-3);
+    border: 1px solid var(--bd-2);
+    border-radius: 8px;
+    padding: 9px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .weight-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    font-weight: 600;
+  }
+  .weight-val {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--info-fg);
+  }
+  .weight-sub {
+    font-size: 11px;
+    color: var(--fg-2);
+    min-height: 28px;
+  }
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--info-fg);
+    cursor: pointer;
+  }
+  .bin-toggle {
+    display: inline-flex;
+    border: 1px solid var(--bd-1);
+    border-radius: 7px;
+    overflow: hidden;
+    width: fit-content;
+  }
+  .bin-toggle button {
+    border: none;
+    border-radius: 0;
+    padding: 4px 12px;
+    background: transparent;
+    color: var(--fg-2);
+  }
+  .bin-toggle button.active {
+    background: var(--info-bg);
+    color: var(--info-fg);
+    font-weight: 600;
+  }
+
+  .workspace-grid {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 10px;
+    flex: 1;
+    min-height: 360px;
+  }
+  @media (max-width: 760px) {
+    .workspace-grid { grid-template-columns: 1fr; }
+  }
+  .ticket-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 540px;
+    overflow-y: auto;
+  }
+  .ticket-item {
+    text-align: left;
+    width: 100%;
+    background: var(--bg-3);
+    border: 1px solid var(--bd-2);
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .ticket-item.selected {
+    border-color: var(--info-fg);
+    box-shadow: 0 0 0 1px var(--info-fg) inset;
+  }
+  .ticket-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .ticket-id { font-family: var(--mono); font-weight: 700; font-size: 12px; }
+  .ticket-task {
+    color: var(--fg-2);
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .ticket-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+  }
+
+  .tree-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .wt-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 11px;
+    border-radius: 8px;
+    background: var(--warn-bg);
+    border: 1px solid rgba(251, 191, 36, 0.45);
+  }
+  .wt-banner.conflict {
+    background: var(--err-bg);
+    border-color: rgba(248, 113, 113, 0.55);
+  }
+  .tree-canvas {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .tree-row {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .tree-indent {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .indent-guide {
+    width: 18px;
+    height: 100%;
+    border-left: 1px dashed var(--bd-1);
+    margin-left: 8px;
+  }
+  .indent-elbow {
+    width: 14px;
+    height: 16px;
+    border-left: 1px solid var(--bd-1);
+    border-bottom: 1px solid var(--bd-1);
+    border-bottom-left-radius: 4px;
+    margin-right: 4px;
+    margin-bottom: 10px;
+  }
+  .node-card {
+    flex: 1;
+    background: var(--bg-3);
+    border: 1px solid var(--bd-1);
+    border-radius: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .node-card.selected {
+    border-color: var(--info-fg);
+    box-shadow: 0 0 0 1px var(--info-fg) inset;
+  }
+  .node-card.waived {
+    border-style: dashed;
+    border-color: rgba(52, 211, 153, 0.55);
+    opacity: 0.92;
+  }
+  .node-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .node-title { font-weight: 600; font-size: 12.5px; }
+  .node-detail { font-size: 11.5px; color: var(--fg-2); }
+
+  .inspector {
+    border-top: 1px solid var(--bd-2);
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 8px;
+  }
+  .score-row {
+    background: var(--bg-3);
+    border: 1px solid var(--bd-2);
+    border-radius: 6px;
+    padding: 6px 8px;
+  }
+  .score-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--fg-2);
+    margin-bottom: 4px;
+  }
+  .bar-track {
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.18);
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--info-fg);
+    border-radius: 999px;
+  }
+  .files-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .file-chip {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    padding: 3px 8px;
+    background: var(--bg-3);
+    border: 1px solid var(--bd-1);
+    border-radius: 6px;
+    color: var(--info-fg);
+  }
+  .toast {
+    font-size: 11.5px;
+    color: var(--fg-2);
+    min-height: 18px;
+  }
+  .empty {
+    color: var(--fg-3);
+    padding: 18px;
+    text-align: center;
+    border: 1px dashed var(--bd-1);
+    border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <!-- Section A1: Top Project Bar -->
+  <div class="card topbar">
+    <div class="brand">
+      <span>🌳 Op Lead With Us</span>
+      <span id="decision-pill" class="pill pill-muted">Loading...</span>
+    </div>
+    <div class="controls-row">
+      <select id="project-select" title="选择活跃项目"></select>
+      <button id="refresh-btn" type="button">↻ 刷新</button>
+    </div>
+  </div>
+
+  <!-- Section A2: Decision Weights Studio -->
+  <div class="card">
+    <div class="weights-header">
+      <div>
+        <strong>⚖️ 决策权重控制台 (Weights Studio)</strong>
+        <span id="weights-mode-hint" class="node-detail" style="margin-left:8px;"></span>
+      </div>
+      <div class="master-box">
+        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+          <input id="master-link-chk" type="checkbox" />
+          <span>🔗 一键总联动 (Master)</span>
+        </label>
+        <div id="master-control"></div>
+      </div>
+    </div>
+    <div id="weights-grid" class="weights-grid"></div>
+  </div>
+
+  <!-- Section B: Ticket Root List & Execution Tree Canvas -->
+  <div class="workspace-grid">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <strong>🎫 工单根结点</strong>
+        <span id="ticket-count-pill" class="pill pill-muted">0</span>
+      </div>
+      <div id="ticket-list" class="ticket-list"></div>
+    </div>
+
+    <div class="card tree-pane">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+        <strong id="tree-header">执行树拓扑 (Router → Lead Root → Child Nodes)</strong>
+        <span id="tree-meta" class="node-detail"></span>
+      </div>
+      <div id="wt-action-bar"></div>
+      <div id="tree-canvas" class="tree-canvas"></div>
+      <div id="node-inspector" class="inspector"></div>
+      <div id="toast" class="toast"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  const state = {
+    data: null,
+    selectedTicketId: "",
+    selectedNodeId: "",
+    hostCapabilities: {},
+    hostContext: {},
+    nextRpcId: 1,
+    pending: new Map(),
+    inFlightTools: 0,
+    weightDebounce: null,
+  };
+
+  const el = {
+    decisionPill: document.getElementById("decision-pill"),
+    projectSelect: document.getElementById("project-select"),
+    refreshBtn: document.getElementById("refresh-btn"),
+    weightsModeHint: document.getElementById("weights-mode-hint"),
+    masterLinkChk: document.getElementById("master-link-chk"),
+    masterControl: document.getElementById("master-control"),
+    weightsGrid: document.getElementById("weights-grid"),
+    ticketCountPill: document.getElementById("ticket-count-pill"),
+    ticketList: document.getElementById("ticket-list"),
+    treeHeader: document.getElementById("tree-header"),
+    treeMeta: document.getElementById("tree-meta"),
+    wtActionBar: document.getElementById("wt-action-bar"),
+    treeCanvas: document.getElementById("tree-canvas"),
+    nodeInspector: document.getElementById("node-inspector"),
+    toast: document.getElementById("toast"),
+  };
+
+  function setToast(msg) {
+    el.toast.textContent = msg || "";
+  }
+
+  function applyHostContext(ctx) {
+    if (!ctx || typeof ctx !== "object") return;
+    state.hostContext = Object.assign({}, state.hostContext, ctx);
+    if (ctx.theme === "light" || ctx.theme === "dark") {
+      document.documentElement.dataset.theme = ctx.theme;
+      document.documentElement.style.colorScheme = ctx.theme;
+    }
+    const vars = ctx.styles && ctx.styles.variables;
+    if (vars && typeof vars === "object") {
+      Object.keys(vars).forEach((k) => {
+        if (typeof vars[k] === "string") {
+          document.documentElement.style.setProperty(k, vars[k]);
+        }
+      });
+    }
+  }
+
+  function postToHost(payload) {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage(payload, "*");
+    }
+  }
+
+  function sendRequest(method, params) {
+    if (!window.parent || window.parent === window) {
+      return Promise.reject(new Error("Standalone preview (no MCP host)"));
+    }
+    const id = state.nextRpcId++;
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        if (state.pending.has(id)) {
+          state.pending.delete(id);
+          reject(new Error("MCP host request timeout: " + method));
+        }
+      }, 15000);
+      state.pending.set(id, { resolve, reject, timer });
+      postToHost({ jsonrpc: "2.0", id, method, params: params || {} });
+    });
+  }
+
+  async function callServerTool(name, args) {
+    if (state.inFlightTools >= 3) {
+      setToast("请求队列繁忙，请稍候...");
+    }
+    state.inFlightTools++;
+    try {
+      const res = await sendRequest("tools/call", { name, arguments: args || {} });
+      if (res && res.isError) {
+        const msg = (res.content && res.content[0] && res.content[0].text) || "Tool error";
+        throw new Error(msg);
+      }
+      if (res && res.structuredContent) {
+        return res.structuredContent;
+      }
+      const txt = res && res.content && res.content[0] && res.content[0].text;
+      return txt ? JSON.parse(txt) : null;
+    } finally {
+      state.inFlightTools = Math.max(0, state.inFlightTools - 1);
+    }
+  }
+
+  function toFileUri(workspace, relPath) {
+    const cleanRel = String(relPath || "").replace(/\\/g, "/").replace(/^\/+/, "");
+    let base = String(workspace || "").replace(/\\/g, "/").replace(/\/+$/, "");
+    let full = cleanRel.match(/^[a-zA-Z]:\//) || cleanRel.startsWith("/") ? cleanRel : (base ? base + "/" + cleanRel : cleanRel);
+    if (!full.startsWith("/")) full = "/" + full;
+    return "file://" + encodeURI(full);
+  }
+
+  async function openFileInAuxPane(relPath) {
+    const ws = (state.data && state.data.active_workspace) || "";
+    const uri = toFileUri(ws, relPath);
+    try {
+      const resp = await sendRequest("com.google.antigravity/toggle-aux-pane", {
+        tabType: "fileView",
+        uri: uri,
+      });
+      if (resp && resp.isError) {
+        setToast("当前全屏视图无侧栏预览（路径：" + relPath + "）");
+      } else {
+        setToast("已在侧栏打开文件：" + relPath);
+      }
+    } catch (err) {
+      setToast("文件路径：" + uri);
+    }
+  }
+
+  function statusPillClass(status) {
+    if (status === "done" || status === "waived") return "pill-ok";
+    if (status === "review" || status === "needs_human_input" || status === "pending_review") return "pill-warn";
+    if (status === "failed" || status === "discarded" || status === "merge_conflict") return "pill-err";
+    return "pill-info";
+  }
+
+  function kindIcon(kind) {
+    const map = {
+      router: "🧭",
+      lead: "🌳",
+      direct: "⚡",
+      researcher: "🔍",
+      implementer: "🛠️",
+      integrate: "🔗",
+      repair: "🔧",
+      gate: "🛡️",
+      reviewer: "🧐",
+      close: "🏁",
+    };
+    return map[kind] || "•";
+  }
+
+  function clearNode(node) {
+    while (node.firstChild) node.removeChild(node.firstChild);
+  }
+
+  function makeEl(tag, cls, text) {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined && text !== null) n.textContent = String(text);
+    return n;
+  }
+
+  function renderTopBar(data) {
+    const dec = data.decision || {};
+    if (dec.enabled) {
+      el.decisionPill.className = "pill pill-ok";
+      el.decisionPill.textContent =
+        "🟢 Online (" + dec.mode + ": " + (dec.request_model || "") + " @ " + (dec.endpoint_host || "local") + ")";
+      el.weightsModeHint.textContent = "在线决策模式：支持 0.00 ~ 1.00 连续阈值平滑调节";
+    } else {
+      el.decisionPill.className = "pill pill-muted";
+      el.decisionPill.textContent = "⚪ Offline (mode: " + (dec.mode || "off") + ")";
+      el.weightsModeHint.textContent = "当前未启用决策模型，仅支持 0 / 1 确定性开关";
+    }
+
+    clearNode(el.projectSelect);
+    const projects = data.projects || [];
+    if (projects.length === 0) {
+      const opt = makeEl("option", "", "暂无活跃项目（运行 orchestrate.py 后自动注册）");
+      opt.value = "";
+      el.projectSelect.appendChild(opt);
+    } else {
+      projects.forEach((p) => {
+        const opt = makeEl("option", "", (p.name || p.workspace) + " (" + (p.ticket_count || 0) + " 张工单)");
+        opt.value = p.workspace;
+        opt.title = p.workspace;
+        if (p.workspace === data.active_workspace) opt.selected = true;
+        el.projectSelect.appendChild(opt);
+      });
+    }
+  }
+
+  function makeWeightControl(value, enabled, onChange) {
+    if (!enabled) {
+      const wrap = makeEl("div", "bin-toggle");
+      const btn0 = makeEl("button", value < 0.5 ? "active" : "", "0 (False)");
+      const btn1 = makeEl("button", value >= 0.5 ? "active" : "", "1 (True)");
+      btn0.type = "button";
+      btn1.type = "button";
+      btn0.onclick = () => onChange(0);
+      btn1.onclick = () => onChange(1);
+      wrap.appendChild(btn0);
+      wrap.appendChild(btn1);
+      return wrap;
+    }
+    const wrap = makeEl("div");
+    wrap.style.display = "flex";
+    wrap.style.alignItems = "center";
+    wrap.style.gap = "8px";
+    const slider = document.createElement("input");
+    slider.type = "range";
+    slider.min = "0";
+    slider.max = "1";
+    slider.step = "0.01";
+    slider.value = String(Number(value).toFixed(2));
+    slider.oninput = (e) => {
+      const v = Number(e.target.value);
+      onChange(v, false);
+    };
+    slider.onchange = (e) => {
+      const v = Number(e.target.value);
+      onChange(v, true);
+    };
+    wrap.appendChild(slider);
+    return wrap;
+  }
+
+  function scheduleWeightSave(patch) {
+    if (!state.data) return;
+    const enabled = Boolean(state.data.decision && state.data.decision.enabled);
+    const eff = Object.assign({}, (state.data.weights && state.data.weights.effective) || {}, patch);
+    if (eff.linked_master && patch.master_weight !== undefined) {
+      eff.review_waiver_weight = patch.master_weight;
+      eff.topology_weight = patch.master_weight;
+      eff.auto_close_weight = patch.master_weight;
+    }
+    state.data.weights.effective = eff;
+    clearTimeout(state.weightDebounce);
+    state.weightDebounce = setTimeout(async () => {
+      try {
+        setToast("正在保存决策权重...");
+        const updated = await callServerTool("app_update_weights", {
+          linked_master: Boolean(eff.linked_master),
+          master_weight: Number(eff.master_weight),
+          review_waiver_weight: Number(eff.review_waiver_weight),
+          topology_weight: Number(eff.topology_weight),
+          auto_close_weight: Number(eff.auto_close_weight),
+          workspace: state.data.active_workspace || "",
+          ticket_id: state.selectedTicketId || "",
+        });
+        if (updated) {
+          state.data = updated;
+          renderAll();
+          setToast(enabled ? "已更新连续权重配置。" : "已更新离线 0/1 确定性开关。");
+        }
+      } catch (err) {
+        setToast("保存权重失败：" + err.message);
+      }
+    }, 180);
+  }
+
+  function renderWeights(data) {
+    const enabled = Boolean(data.decision && data.decision.enabled);
+    const eff = (data.weights && data.weights.effective) || {};
+    const prev = (data.weights && data.weights.preview) || {};
+    const linked = Boolean(eff.linked_master);
+
+    el.masterLinkChk.checked = linked;
+    el.masterLinkChk.onchange = () => {
+      scheduleWeightSave({ linked_master: el.masterLinkChk.checked, master_weight: Number(eff.master_weight || 0) });
+    };
+
+    clearNode(el.masterControl);
+    const masterVal = Number(eff.master_weight ?? (enabled ? 0.65 : 0));
+    const mReadout = makeEl("span", "weight-val", enabled ? masterVal.toFixed(2) : String(masterVal >= 0.5 ? 1 : 0));
+    el.masterControl.style.display = "flex";
+    el.masterControl.style.alignItems = "center";
+    el.masterControl.style.gap = "8px";
+    el.masterControl.appendChild(
+      makeWeightControl(masterVal, enabled, (val, immediate) => {
+        mReadout.textContent = enabled ? val.toFixed(2) : String(val);
+        if (immediate !== false) {
+          scheduleWeightSave({ linked_master: true, master_weight: val });
+        }
+      })
+    );
+    el.masterControl.appendChild(mReadout);
+
+    const wWaiver = Number(eff.review_waiver_weight ?? 0);
+    const wTopo = Number(eff.topology_weight ?? 0);
+    const wClose = Number(eff.auto_close_weight ?? 1);
+
+    const waiverSub = !enabled
+      ? (wWaiver >= 0.5 ? "w=1 -> 本地硬护栏通过即免除独立 Reviewer" : "w=0 -> 必然启动独立 agy-reviewer 审核")
+      : (wWaiver <= 0 ? "w=0.00 -> 100% 启动独立 agy-reviewer"
+        : wWaiver >= 1 ? "w=1.00 -> 仅需 criteria>=0.50 且 test>=0.50 即可免审"
+        : "w=" + wWaiver.toFixed(2) + " -> 免审门槛 criteria>=" + prev.tau_criteria + ", test>=" + prev.tau_test);
+
+    const topoSub = !enabled
+      ? (wTopo >= 0.5 ? "w=1 -> 启用启发式自适应 pipeline / parallel" : "w=0 -> 锁定单执行员基础树 (single_flash)")
+      : (wTopo <= 0 ? "w=0.00 -> 锁定单执行员基础树 (single_flash)"
+        : "w=" + wTopo.toFixed(2) + " -> 增益 ×" + prev.topo_gain + ", parallel>=" + prev.tau_parallel + ", direct>=" + prev.tau_direct);
+
+    const closeSub = !enabled
+      ? (wClose >= 0.5 ? "w=1 -> 审核通过且 risk<=3 自动合入结单 done" : "w=0 -> 全停在 review 等待人工确认")
+      : (wClose <= 0 ? "w=0.00 -> 全停在 review 等待人工确认"
+        : wClose >= 1 ? "w=1.00 -> 通过且 risk<=4 自动合入结单 done"
+        : "w=" + wClose.toFixed(2) + " -> risk<=" + prev.max_auto_risk + " 且 human<=" + prev.tau_human + " 自动结单");
+
+    const specs = [
+      { key: "review_waiver_weight", label: "① 独立审核跳过权重", val: wWaiver, sub: waiverSub },
+      { key: "topology_weight", label: "② 前置拓扑变更权重", val: wTopo, sub: topoSub },
+      { key: "auto_close_weight", label: "③ 自动结单权重", val: wClose, sub: closeSub },
+    ];
+
+    clearNode(el.weightsGrid);
+    specs.forEach((sp) => {
+      const tile = makeEl("div", "weight-tile");
+      const top = makeEl("div", "weight-top");
+      top.appendChild(makeEl("span", "", sp.label));
+      const valSpan = makeEl("span", "weight-val", enabled ? sp.val.toFixed(2) : String(sp.val >= 0.5 ? 1 : 0));
+      top.appendChild(valSpan);
+      tile.appendChild(top);
+      tile.appendChild(
+        makeWeightControl(sp.val, enabled, (val, immediate) => {
+          valSpan.textContent = enabled ? val.toFixed(2) : String(val);
+          if (immediate !== false) {
+            const patch = { linked_master: false };
+            patch[sp.key] = val;
+            scheduleWeightSave(patch);
+          }
+        })
+      );
+      tile.appendChild(makeEl("div", "weight-sub", sp.sub));
+      el.weightsGrid.appendChild(tile);
+    });
+  }
+
+  function renderTickets(data) {
+    const tickets = data.tickets || [];
+    el.ticketCountPill.textContent = String(tickets.length);
+    clearNode(el.ticketList);
+
+    if (!tickets.length) {
+      el.ticketList.appendChild(makeEl("div", "empty", "该项目暂无工单记录"));
+      return;
+    }
+
+    if (!state.selectedTicketId || !tickets.some((t) => t.ticket_id === state.selectedTicketId)) {
+      state.selectedTicketId = data.selected_ticket_id || tickets[0].ticket_id;
+    }
+
+    tickets.forEach((t) => {
+      const btn = makeEl("button", "ticket-item" + (t.ticket_id === state.selectedTicketId ? " selected" : ""));
+      btn.type = "button";
+      btn.onclick = () => {
+        state.selectedTicketId = t.ticket_id;
+        state.selectedNodeId = "";
+        renderTreeAndInspector();
+        renderTickets(state.data);
+      };
+      const head = makeEl("div", "ticket-head");
+      head.appendChild(makeEl("span", "ticket-id", t.ticket_id));
+      head.appendChild(makeEl("span", "pill " + statusPillClass(t.status), String(t.status || "").toUpperCase()));
+      btn.appendChild(head);
+      btn.appendChild(makeEl("div", "ticket-task", t.task || ""));
+
+      const tags = makeEl("div", "ticket-tags");
+      tags.appendChild(makeEl("span", "pill pill-muted", t.route || "single_flash"));
+      if (t.isolation && t.isolation.mode === "worktree") {
+        tags.appendChild(makeEl("span", "pill pill-info", "🌿 " + (t.isolation.merge_status || "worktree")));
+      }
+      btn.appendChild(tags);
+      el.ticketList.appendChild(btn);
+    });
+  }
+
+  function buildHierarchy(nodes) {
+    const byParent = new Map();
+    const byId = new Map();
+    nodes.forEach((n) => byId.set(n.id, n));
+    nodes.forEach((n) => {
+      const pid = n.parent_id && byId.has(n.parent_id) ? n.parent_id : "__root__";
+      if (!byParent.has(pid)) byParent.set(pid, []);
+      byParent.get(pid).push(n);
+    });
+    const ordered = [];
+    function walk(pid, depth) {
+      const children = byParent.get(pid) || [];
+      children.forEach((child) => {
+        ordered.push({ node: child, depth });
+        walk(child.id, depth + 1);
+      });
+    }
+    walk("__root__", 0);
+    return ordered;
+  }
+
+  async function runWorktreeAction(ticket, action, force) {
+    try {
+      setToast("正在执行 Worktree 操作 (" + action + ")...");
+      const updated = await callServerTool("app_worktree_action", {
+        workspace: state.data.active_workspace,
+        ticket_id: ticket.ticket_id,
+        action: action,
+        force: Boolean(force),
+      });
+      if (updated) {
+        state.data = updated;
+        const ar = updated.action_result || {};
+        if (ar.merge_conflict) {
+          setToast("⚠️ 合入冲突：" + (ar.conflicts || []).join(", "));
+        } else {
+          setToast("✅ 操作完成：" + (ar.merge_status || action));
+        }
+        renderAll();
+      }
+    } catch (err) {
+      setToast("Worktree 操作失败：" + err.message);
+    }
+  }
+
+  function renderTreeAndInspector() {
+    clearNode(el.wtActionBar);
+    clearNode(el.treeCanvas);
+    clearNode(el.nodeInspector);
+
+    const tickets = (state.data && state.data.tickets) || [];
+    const ticket = tickets.find((t) => t.ticket_id === state.selectedTicketId);
+    if (!ticket) {
+      el.treeHeader.textContent = "执行树拓扑";
+      el.treeMeta.textContent = "";
+      el.treeCanvas.appendChild(makeEl("div", "empty", "请选择左侧工单查看执行树"));
+      return;
+    }
+
+    el.treeHeader.textContent = "🌳 " + ticket.ticket_id + " 执行树";
+    el.treeMeta.textContent = "run=" + (ticket.latest_run_id || "-") + " · route=" + (ticket.route || "-");
+
+    const iso = ticket.isolation || {};
+    const showWtBar =
+      iso.mode === "worktree" &&
+      (iso.merge_status === "pending_review" || iso.merge_status === "merge_conflict" || (ticket.status === "review" && iso.worktree_exists));
+
+    if (showWtBar) {
+      const isConflict = iso.merge_status === "merge_conflict" || (iso.conflicts && iso.conflicts.length > 0);
+      const bar = makeEl("div", "wt-banner" + (isConflict ? " conflict" : ""));
+      const info = makeEl("div");
+      info.appendChild(makeEl("strong", "", "🌿 隔离 Worktree 待处理：" + (iso.branch || ticket.ticket_id)));
+      const subText = isConflict
+        ? "检测到主工作区文件冲突：" + (iso.conflicts || []).join(", ")
+        : "改动文件（" + ((iso.changed_files || []).length) + " 个）暂存隔离分支，主工作区未受影响。";
+      info.appendChild(makeEl("div", "node-detail", subText));
+      bar.appendChild(info);
+
+      const btns = makeEl("div", "controls-row");
+      const mergeBtn = makeEl("button", "btn-primary", isConflict ? "⚠️ 强制覆盖合入并结单" : "🟢 一键合入主工作区并结单");
+      mergeBtn.type = "button";
+      mergeBtn.onclick = () => runWorktreeAction(ticket, "merge_and_close", isConflict);
+      const discardBtn = makeEl("button", "btn-danger", "🗑️ 丢弃 Worktree");
+      discardBtn.type = "button";
+      discardBtn.onclick = () => runWorktreeAction(ticket, "discard", false);
+      btns.appendChild(mergeBtn);
+      btns.appendChild(discardBtn);
+      bar.appendChild(btns);
+      el.wtActionBar.appendChild(bar);
+    }
+
+    const nodes = ticket.nodes || [];
+    const ordered = buildHierarchy(nodes);
+    if (!state.selectedNodeId || !nodes.some((n) => n.id === state.selectedNodeId)) {
+      state.selectedNodeId = (nodes.find((n) => n.kind === "gate") || nodes[0] || {}).id || "";
+    }
+
+    ordered.forEach(({ node, depth }) => {
+      const row = makeEl("div", "tree-row");
+      if (depth > 0) {
+        const indent = makeEl("div", "tree-indent");
+        for (let i = 0; i < depth - 1; i++) indent.appendChild(makeEl("div", "indent-guide"));
+        indent.appendChild(makeEl("div", "indent-elbow"));
+        row.appendChild(indent);
+      }
+
+      const isWaived = node.kind === "reviewer" && node.status === "waived";
+      const card = makeEl(
+        "button",
+        "node-card" + (node.id === state.selectedNodeId ? " selected" : "") + (isWaived ? " waived" : "")
+      );
+      card.type = "button";
+      card.onclick = () => {
+        state.selectedNodeId = node.id;
+        renderTreeAndInspector();
+      };
+      const top = makeEl("div", "node-top");
+      top.appendChild(makeEl("span", "node-title", kindIcon(node.kind) + " " + (node.title || node.id)));
+      const badgeText = isWaived ? "✂️ WAIVED" : String(node.status || "").toUpperCase();
+      top.appendChild(makeEl("span", "pill " + statusPillClass(node.status), badgeText));
+      card.appendChild(top);
+      if (node.detail) {
+        card.appendChild(makeEl("div", "node-detail", node.detail));
+      }
+      row.appendChild(card);
+      el.treeCanvas.appendChild(row);
+    });
+
+    const activeNode = nodes.find((n) => n.id === state.selectedNodeId);
+    if (!activeNode) return;
+
+    const inspHead = makeEl("div", "node-top");
+    inspHead.appendChild(makeEl("strong", "", "🔎 结点详情：" + (activeNode.title || activeNode.id)));
+    inspHead.appendChild(makeEl("span", "pill pill-muted", "kind=" + activeNode.kind + " · id=" + activeNode.id));
+    el.nodeInspector.appendChild(inspHead);
+
+    if (activeNode.worktree) {
+      el.nodeInspector.appendChild(makeEl("div", "node-detail", "Worktree 分支：" + activeNode.worktree));
+    }
+    if (activeNode.detail) {
+      el.nodeInspector.appendChild(makeEl("div", "node-detail", activeNode.detail));
+    }
+
+    const scores = activeNode.scores || {};
+    const scoreKeys = Object.keys(scores);
+    if (scoreKeys.length) {
+      const sGrid = makeEl("div", "score-grid");
+      scoreKeys.forEach((k) => {
+        const raw = Number(scores[k]);
+        const pct = k === "change_risk" || k === "complexity" ? Math.min(100, Math.max(0, (raw / 5) * 100)) : Math.min(100, Math.max(0, raw * 100));
+        const sRow = makeEl("div", "score-row");
+        const lbl = makeEl("div", "score-label");
+        lbl.appendChild(makeEl("span", "", k));
+        lbl.appendChild(makeEl("span", "", k === "change_risk" || k === "complexity" ? raw + "/5" : raw.toFixed(2)));
+        const track = makeEl("div", "bar-track");
+        const fill = makeEl("div", "bar-fill");
+        fill.style.width = pct.toFixed(0) + "%";
+        track.appendChild(fill);
+        sRow.appendChild(lbl);
+        sRow.appendChild(track);
+        sGrid.appendChild(sRow);
+      });
+      el.nodeInspector.appendChild(sGrid);
+    }
+
+    if (activeNode.evidence_summary) {
+      const ev = activeNode.evidence_summary;
+      el.nodeInspector.appendChild(
+        makeEl(
+          "div",
+          "node-detail",
+          "本地校验：改动 " + (ev.changed_file_count || 0) + " 文件 · 结构失败 " + (ev.failed_artifact_count || 0) +
+          " · 命令失败 " + (ev.failed_command_count || 0) + " · 越界 " + (ev.out_of_scope_count || 0)
+        )
+      );
+    }
+
+    const files = activeNode.changed_files || activeNode.relevant_files || [];
+    if (files.length) {
+      el.nodeInspector.appendChild(makeEl("strong", "", "📄 关联/改动文件（点击在侧栏打开）："));
+      const wrap = makeEl("div", "files-wrap");
+      files.forEach((f) => {
+        const fBtn = makeEl("button", "file-chip", f);
+        fBtn.type = "button";
+        fBtn.onclick = () => openFileInAuxPane(f);
+        wrap.appendChild(fBtn);
+      });
+      el.nodeInspector.appendChild(wrap);
+    }
+  }
+
+  function renderAll() {
+    if (!state.data) return;
+    renderTopBar(state.data);
+    renderWeights(state.data);
+    renderTickets(state.data);
+    renderTreeAndInspector();
+  }
+
+  el.projectSelect.onchange = async () => {
+    const ws = el.projectSelect.value;
+    try {
+      const updated = await callServerTool("app_get_state", { workspace: ws });
+      if (updated) {
+        state.data = updated;
+        state.selectedTicketId = updated.selected_ticket_id || "";
+        state.selectedNodeId = "";
+        renderAll();
+      }
+    } catch (err) {
+      setToast("切换项目失败：" + err.message);
+    }
+  };
+
+  el.refreshBtn.onclick = async () => {
+    try {
+      const updated = await callServerTool("app_get_state", {
+        workspace: (state.data && state.data.active_workspace) || "",
+        ticket_id: state.selectedTicketId || "",
+      });
+      if (updated) {
+        state.data = updated;
+        renderAll();
+        setToast("已刷新最新工单执行树与权重。");
+      }
+    } catch (err) {
+      setToast("刷新失败：" + err.message);
+    }
+  };
+
+  window.addEventListener("message", (event) => {
+    const msg = event.data;
+    if (!msg || typeof msg !== "object" || msg.jsonrpc !== "2.0") return;
+
+    if (msg.id !== undefined && msg.id !== null && state.pending.has(msg.id)) {
+      const entry = state.pending.get(msg.id);
+      state.pending.delete(msg.id);
+      clearTimeout(entry.timer);
+      if (msg.error) {
+        entry.reject(new Error(msg.error.message || "RPC error"));
+      } else {
+        entry.resolve(msg.result);
+      }
+      return;
+    }
+
+    if (msg.method === "ping" && msg.id !== undefined) {
+      postToHost({ jsonrpc: "2.0", id: msg.id, result: {} });
+      return;
+    }
+    if (msg.method === "ui/resource-teardown" && msg.id !== undefined) {
+      postToHost({ jsonrpc: "2.0", id: msg.id, result: {} });
+      return;
+    }
+
+    const params = msg.params || {};
+    if (msg.method === "ui/notifications/host-context-changed") {
+      applyHostContext(params);
+    } else if (msg.method === "ui/notifications/tool-input") {
+      setToast("正在加载工单树...");
+    } else if (msg.method === "ui/notifications/tool-result") {
+      const payload = params.structuredContent || (
+        params.content && params.content[0] && params.content[0].text
+          ? (() => { try { return JSON.parse(params.content[0].text); } catch (_) { return null; } })()
+          : null
+      );
+      if (payload && typeof payload === "object") {
+        state.data = payload;
+        state.selectedTicketId = payload.selected_ticket_id || "";
+        renderAll();
+        setToast("");
+      }
+    } else if (msg.method === "ui/notifications/tool-cancelled") {
+      setToast("加载已取消。");
+    }
+  });
+
+  async function initMcpApp() {
+    if (!window.parent || window.parent === window) {
+      setToast("Standalone preview mode (no MCP host connected).");
+      return;
+    }
+    try {
+      const initRes = await sendRequest("ui/initialize", {
+        protocolVersion: "2026-01-26",
+        appInfo: { name: "op-lead-with-us-native-board", version: "0.7.0" },
+        appCapabilities: {},
+      });
+      if (initRes) {
+        state.hostCapabilities = initRes.hostCapabilities || {};
+        applyHostContext(initRes.hostContext);
+      }
+      postToHost({ jsonrpc: "2.0", method: "ui/notifications/initialized", params: {} });
+
+      if (typeof ResizeObserver !== "undefined" && (!state.hostContext.displayMode || state.hostContext.displayMode === "inline")) {
+        const ro = new ResizeObserver(() => {
+          const rect = document.documentElement.getBoundingClientRect();
+          postToHost({
+            jsonrpc: "2.0",
+            method: "ui/notifications/size-changed",
+            params: { width: Math.ceil(rect.width), height: Math.ceil(document.body.scrollHeight) },
+          });
+        });
+        ro.observe(document.body);
+      }
+
+      setTimeout(async () => {
+        if (!state.data && state.hostCapabilities.serverTools) {
+          try {
+            const fetched = await callServerTool("app_get_state", {});
+            if (fetched) {
+              state.data = fetched;
+              renderAll();
+            }
+          } catch (_) {
+            // Host may deliver tool-result separately
+          }
+        }
+      }, 350);
+    } catch (err) {
+      setToast("MCP App 初始化失败：" + err.message);
+    }
+  }
+
+  initMcpApp();
+})();
+</script>
+</body>
+</html>

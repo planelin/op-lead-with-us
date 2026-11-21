@@ -1,4 +1,11 @@
 {
-  "name": "op-lead-with-us",
-  "description": "Antigravity-native two-model orchestration: Claude Opus 5.5 plans and accepts; Gemini 3.8 Flash researches, implements, and reviews."
+  "name": "op-lead-with-us-native",
+  "displayName": "Op Lead With Us (Native)",
+  "version": "0.7.0",
+  "description": "ToS-compliant Antigravity 2.x native multi-agent orchestrator powered by run_workflow, Flash workers, and an external/local Decision Model (System1 / Laya).",
+  "suggestedPrompts": [
+    "Run the native orchestrator workflow to implement a scoped feature in this workspace",
+    "Diagnose the Decision Model (System1 / Laya) connectivity and routing thresholds",
+    "Inspect recent .argon/runs ledger records and recorded lessons"
+  ]
 }

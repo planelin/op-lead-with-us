@@ -7,15 +7,15 @@
 </p>
 
 <p align="center">
-  <a href="https://antigravity.google"><img src="https://img.shields.io/badge/platform-Google%20Antigravity-A0C4FF?style=flat-square&labelColor=3B2866&logo=google&logoColor=white" alt="Antigravity" /></a>
-  <img src="https://img.shields.io/badge/lead-Claude%20Opus%205.5-FF7EB6?style=flat-square&labelColor=3B2866&logo=anthropic&logoColor=white" alt="Claude Opus" />
-  <img src="https://img.shields.io/badge/workers-Gemini%203.8%20Flash-8EECBC?style=flat-square&labelColor=3B2866&logo=google&logoColor=white" alt="Gemini Flash" />
+  <a href="https://antigravity.google"><img src="https://img.shields.io/badge/platform-Google%20Antigravity%202.x-A0C4FF?style=flat-square&labelColor=3B2866&logo=google&logoColor=white" alt="Antigravity" /></a>
+  <img src="https://img.shields.io/badge/version-0.7.0%20Native-FF7EB6?style=flat-square&labelColor=3B2866" alt="Version 0.7.0 Native" />
+  <img src="https://img.shields.io/badge/workers-Gemini%20Flash-8EECBC?style=flat-square&labelColor=3B2866&logo=google&logoColor=white" alt="Gemini Flash" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-FFD166?style=flat-square&labelColor=3B2866" alt="MIT License" /></a>
   <img src="https://img.shields.io/badge/dependencies-zero%20external-9E47E4?style=flat-square&labelColor=3B2866" alt="Zero Dependencies" />
 </p>
 
 <p align="center">
-  <b><a href="#quick-start">Quick Start</a> · <a href="#core-modes">Core Modes</a> · <a href="#roles">Roles</a> · <a href="#en">English</a> · <a href="#license">License</a></b>
+  <b><a href="#quick-start">Quick Start</a> · <a href="#core-modes">Core Architecture</a> · <a href="#roles">Roles</a> · <a href="#en">English</a> · <a href="#license">License</a></b>
 </p>
 
 ---
@@ -24,95 +24,76 @@
 
 ## 🇨🇳 简体中文
 
-**`op-lead-with-us`** 是一款专为 Google Antigravity (`agy`) 打造的多智能体编排插件。
+**`op-lead-with-us-native` (`0.7.0`)** 是一款 **100% 遵循 Antigravity 2.x 官方合规接口** 打造的原生多智能体编排插件。
 
-在最新版本中，插件全面升级为以 **Super-Agent 架构** 为核心的**「遗忘模式 (`op-lead-with-us`)」**，同时完整保留了经典的**「更多模式 (`argon-for-gdnsyt`)」**主从派发架构，满足从“多任务异步自治”到“高阶主模型配额精打细算”的不同开发场景。
+本版本全面重构为基于原生 **`run_workflow`**、**决策模型权重门禁（System1 / 本地 Laya / OpenAI 兼容）**、**工单执行树（`T-xxxx`）+ 按需 Git Worktree 隔离** 与 **官方 MCP App 可视化界面** 的原生架构：**零未公开内部 LS RPC 调用、零 `agy acp` 包装脚本、零后台脱离会话轮询守护进程、零外部运行依赖（纯 Python 3.13 标准库）**。
 
 ---
 
 <a id="core-modes"></a>
 
-### <img src="assets/pixel/icon-modes.png" width="24" align="absmiddle" alt="" /> 核心模式一览
+### <img src="assets/pixel/icon-modes.png" width="24" align="absmiddle" alt="" /> 核心架构与特性一览
 
-#### 1. `op-lead-with-us`（遗忘模式 / Oblivion Mode）—— 全新 Super-Agent 架构
+#### 1. `op-lead-with-us`（Native Super-Agent 全局路由器）+ 工单执行树 (`T-xxxx`)
 
 <img src="assets/pixel/mascot.png" width="96" align="right" alt="Oblivion Mode Mascot" />
 
-> **核心理念：解放人类注意力，忘掉繁琐的多窗口切换与上下文管理，使你不惧遗忘。**
+> **核心理念：零中途打扰（Scheme A）· 自动结单（Scheme B）· 按需隔离不脏主工作区。**
 
-传统单会话代理在面对复杂工程或多线任务时，往往受限于“主模型亲力亲为导致上下文腐化”以及“人类同时盯多个会话的心智极限”。**遗忘模式 (`op-lead-with-us`)** 引入了全新的 **Router + Ticket 工单状态机 + 跨会话隔离执行** 的 Super-Agent 架构：
+在 Antigravity **Agents** 下拉框选择 **`op-lead-with-us`** 后，主会话作为 Tier 1 全局路由器单次触发 `workflows/orchestrate.py`，所有中间进度在原生工作流卡片内静默推进，最终仅返回一份结构化结果：
 
-* **注意力解耦与单窗口全局调度（Router 层）**：主入口仅负责意图识别、任务立项（Ticket）、状态追踪与向人类汇报关键决策点，**结构化剥离直接改写代码的权限**，彻底杜绝主窗口因长日志阻塞而降智。
-* **持久化 Ticket 状态机与受控并发槽位**：任务以独立工单（`queued` / `working` / `waiting_human` / `completed` / `blocked`）持久化流转。通过并发槽位锁（`maxActive`）与人类回复优先槽位，让多个工单在后台有序推进，绝不打爆宿主机并发与速率限制。
-* **跨会话派生与模型安全门禁（Lead & Worker 层）**：每个进入活跃状态的工单会自动派生/唤醒独立的顶层 Lead 会话（强制校验并锁定低成本 `Flash` 模型，内置熔断保护防止误烧高阶配额），再由该工单的 Lead 向下通过 `invoke_subagent` 调度专属的调研、实现与审计子代理。
+* **工单即执行树（Ticket Execution Tree）**：每次编排在 `<workspace>/.argon/tickets.json` 自动分配或续接 `T-0001` 根工单，并以 `Router -> Lead [T-xxxx] -> (Researcher / Implementer / Self-Repair / Gate / Reviewer [active|waived] / Close)` 树状拓扑留痕，同时自动注册至全局多项目索引 `projects.json`。
+* **按需自适应 Git Worktree**：单文件微改动直接在主工作区极速落盘；多文件、复杂任务、`pipeline` 或 `parallel_branch` 在 `.argon/worktrees/T-xxxx`（分支 `argon/T-xxxx`）自动派生隔离 Worktree（镜像未提交业务文件）。校验通过且自动结单（`done`）时**无感同步回主工作区并清理临时 Worktree（绝不自动 `git commit`/`push`）**；存在合入冲突或待人工签字（`review`）时完整保留 Worktree 供面板一键预览、合入或丢弃。
 
 ```text
-                       [ 人类开发者 (单一交互窗口) ]
-                                    │
-                                    ▼
-             ┌─────────────────────────────────────────────┐
-             │           op-lead-with-us (遗忘模式)         │
-             │       Global Router & Ticket 状态机调度      │
-             │   (意图收集 / 工单排队 / 槽位控制 / 熔断门禁)  │
-             └──────────────────────┬──────────────────────┘
-                                    │ 跨会话受控派生 (强制锁定 Flash)
-                   ┌────────────────┴────────────────┐
-                   ▼                                 ▼
-       ┌───────────────────────┐         ┌───────────────────────┐
-       │  Ticket #1 Lead 会话  │         │  Ticket #2 Lead 会话   │
-       │(独立会话 & 隔离工作区) │         │  (独立会话 & 隔离工作区) │
-       └───────────┬───────────┘         └───────────┬───────────┘
-                   │ invoke_subagent                 │ invoke_subagent
-         ┌─────────┼─────────┐             ┌─────────┼─────────┐
-         ▼         ▼         ▼             ▼         ▼         ▼
-      [调研员]  [实现员]  [审计员]        [调研员]  [实现员]  [审计员]
-     (Research) (Implem)  (Review)     (Research) (Implem)  (Review)
+                       [ 主会话 Router (op-lead-with-us) ]
+                                      │ run_workflow(workflows/orchestrate.py)
+                                      ▼
+               ┌──────────────────────────────────────────────┐
+               │        Lead Root [T-0001] (orchestrate.py)    │
+               │   Checkpoint 1: 路由决策 (topology_weight)    │
+               └──────────────────────┬───────────────────────┘
+          ┌───────────────┬───────────┴───────────┬───────────────┐
+          ▼               ▼                       ▼               ▼
+     [⚡ Direct]   [🛠️ single_flash]     [🔍 pipeline]    [🌿 parallel_branch]
+                                      Researcher → Impl   Sub-Worktrees → Integrate
+                                              │
+                                              ▼
+                       [🛡️ Local Verifier + Scheme A 静默自修]
+                                              │
+                                              ▼
+                 [⚖️ Checkpoint 3: 免审 & 自动结单 (w_waiver, w_close)]
+                          ┌───────────────────┴───────────────────┐
+                          ▼                                       ▼
+           [🟢 DONE (Worktree 无感合入清理)]        [🟡 REVIEW (保留 Worktree 待审)]
 ```
 
 <br clear="right" />
 
 ---
 
-#### 2. `argon-for-gdnsyt`（更多模式 / More Mode）—— 经典主从派发架构
+#### 2. 决策模型与双模态权重系统 (`DecisionWeights`)
 
-<img src="assets/pixel/argon-graviton.png" width="96" align="right" alt="Argon Graviton Surge Logo" />
+<img src="assets/pixel/argon-graviton.png" width="96" align="right" alt="Decision Model & Weights Logo" />
 
-> 核心理念：**Argon for 更多你使用它**
-> Огонь по готовности —— **“请随意开火吧！”。**
+> **无模型时 `{0, 1}` 确定性开关 · 有模型时 `[0.00, 1.00]` 连续阈值调制 · 硬护栏绝不绕过。**
 
-**`argon-for-gdnsyt`** 完整继承了旧版 `op-lead-with-us` 的经典 **Main Agent → Subagents** 架构。当你希望在单次会话中动用顶级推理模型（如 **Claude Opus 5.5** 或 **Gemini Argon**）亲自把控架构设计，但又不想让昂贵的配额浪费在翻找代码、反复改文件和跑单测上时，请选择此模式：
+接入 System1（`https://emrank.tech/v1/decisions`）、本地 **Laya** 或 OpenAI 兼容端点后，工作流在 **Route / Escalation / Quality Gate** 三个检查点受以下三项独立权重（及可选 **`linked_master` 一键总联动**）精准调制：
 
-* **主脑专注决策，苦力全交 Flash**：主模型（`model: inherit`）仅负责需求定界、拆解 Task Packet、审查精简证据与最终验收；所有高消耗的代码库搜索、文件编辑、测试执行与自修复循环全部通过 `invoke_subagent` 卸载给后台的 **Gemini Flash** 子代理。
-* **支持两阶段规划 (`PLAN_ONLY`)**：可先用高阶模型产出一份高密度 `PLAN.md`（≤120 行）后立即停机，再切回免费/充裕的 Flash 会话执行具体计划，做到高阶模型与测试日志物理零接触。
-* **高压缩证据回传**：子代理报告严格限高（调研 ≤40 行 / 实现 ≤50 行 / 审计 ≤60 行），保持主会话上下文始终纯净如初。
-
-```text
-                             [ 用户需求输入 ]
-                                    │
-                                    ▼
-             ┌─────────────────────────────────────────────┐
-             │          argon-for-gdnsyt (更多模式)         │
-             │        高阶主模型 (Opus / Argon / Pro)       │
-             │         架构设计 · 任务拆解 · 最终验收         │
-             └──────────────────────┬──────────────────────┘
-                                    │ invoke_subagent
-             ┌──────────────────────┼──────────────────────┐
-             ▼                      ▼                      ▼
-     [ agy-researcher ]    [ agy-implementer ]     [ agy-reviewer ]
-       (Gemini Flash)        (Gemini Flash)         (Gemini Flash)
-       只读代码库与文档调研     受控编辑与单测自修复      独立 Diff 与质量审计
-```
+* **① 独立审核跳过权重 `review_waiver_weight`**：控制本地硬护栏 100% 通过后是否跳过 `agy-reviewer` 终审（在线按 $\tau_{\text{criteria}} = 0.92 - 0.42w$、$\tau_{\text{test}} = 0.88 - 0.42w$ 动态调节免审门槛；离线 `0`=必审、`1`=本地硬校验通过即免审）。
+* **② 前置拓扑变更权重 `topology_weight`**：控制执行树是否从基础 `single_flash` 自动伸缩为 `pipeline`、`parallel_branch` 或 `direct`（离线 `0`=锁定 `single_flash`、`1`=启用启发式）。
+* **③ 自动结单权重 `auto_close_weight`**：控制审核通过后是否直接原子合入 Worktree 并闭环为 `done`（`0`=全部停在 `review` 等待人工确认；`>0` 按风险等级与人工复核需求分数动态放行，冲突或显式 `require_human_review=true` 时强制人工确认）。
 
 <br clear="right" />
 
 ---
 
-#### 3. `op-lead-with-cry`（快模式）
+#### 3. 官方 MCP App 可视化界面 (`Op Lead With Us` / `Op Lead Tree`)
 
-<img src="assets/pixel/cry-turbo.png" width="84" align="right" alt="Turbo Cry Mode Logo" />
+<img src="assets/pixel/cry-turbo.png" width="84" align="right" alt="MCP App Board Icon" />
 
-* **定位说明**：这是一个以**推进速度**为单一目标的辅助模式（需要浪费额度时可能用得上）。
-* **运行方式**：手动将主会话选为 `Gemini Flash`，主动放弃对 Worker 调用次数的节制，通过依赖感知的任务拆解与多路 Flash 子代理并发扇出换取速度。适合配额充裕、追求快速平推的简单任务。
+* **双入口原生呈现**：由纯 Python 标准库编写的 `mcp/board_server.py` + 自包含单文件前端 `mcp/ui/app.html` 提供支持，符合 `default-src 'none'` CSP 规范与 Antigravity 主题变量。
+* **多项目工单树 & 一键 Worktree 控制**：通过 Antigravity 左侧主边栏 **`Op Lead With Us`**（`global`）或右侧 `+` 辅助面板 **`Op Lead Tree`**（`aux_pane`）打开，随时切换活跃项目、在线调节权重滑块 / 离线 `0/1` 开关、点击节点文件直接调用侧栏预览，并一键 **合入主工作区并结单** 或 **丢弃待审 Worktree**。
 
 <br clear="right" />
 
@@ -120,16 +101,16 @@
 
 <a id="roles"></a>
 
-### <img src="assets/pixel/icon-roles.png" width="24" align="absmiddle" alt="" /> 角色与模型矩阵 (Roles & Personas)
+### <img src="assets/pixel/icon-roles.png" width="24" align="absmiddle" alt="" /> 角色与组件矩阵 (Roles & Components)
 
-| 角色 / 模式 | 标识符 (Identifier) | 推荐模型配置 | 职责与权限边界 |
+| 角色 / 组件 | 标识符 (Identifier) | 模型 / 运行时 | 职责与权限边界 |
 | :--- | :--- | :--- | :--- |
-| <img src="assets/pixel/mascot.png" width="24" align="absmiddle" alt="" /> **遗忘模式 (Super-Agent)** | `op-lead-with-us` | 用户手动选择主模型（L2lead与L3worker一般锁定flash模型） | **super-agent架构**。全局工单路由、持久化状态机管理、跨会话派生独立工单 Lead 并汇总交付。 |
-| <img src="assets/pixel/argon-graviton.png" width="24" align="absmiddle" alt="" /> **更多模式 (Classic Lead)** | `argon-for-gdnsyt` | 用户手动选择主模型（推荐 **Opus / Argon**） | **经典架构**。单会话内由高阶模型担任总架构师，将脏活累活委派给 Flash 子代理，极致节省主模型配额。 |
-| <img src="assets/pixel/cry-turbo.png" width="24" align="absmiddle" alt="" /> **快模式 (浪费模式)** | `op-lead-with-cry` | 手动选择 **Gemini Flash** (`model: flash`) | 速度优先的并发扇出调度模式，用更高的子代理调用消耗换取并行推进（辅助特性）。 |
-| <img src="assets/pixel/role-researcher.png" width="24" align="absmiddle" alt="" /> **调研员 (Researcher)** | `agy-researcher` | **Gemini Flash** (`flash`) | 只读代码库探索、依赖分析、接口定位与外部文档检索，严禁修改任何代码。 |
-| <img src="assets/pixel/role-implementer.png" width="24" align="absmiddle" alt="" /> **实现员 (Implementer)** | `agy-implementer` | **Gemini Flash** (`flash`) | 在限定文件与预算内执行代码编写、运行测试与自修复（支持分支/目录隔离）。 |
-| <img src="assets/pixel/role-reviewer.png" width="24" align="absmiddle" alt="" /> **审计员 (Reviewer)** | `agy-reviewer` | **Gemini Flash** (`flash`) | 独立审查 Git Diff、测试结果与验收标准匹配度，提供客观放行或驳回结论，只读无写权限。 |
+| <img src="assets/pixel/mascot.png" width="24" align="absmiddle" alt="" /> **全局路由器 (Global Router)** | `op-lead-with-us` | 主会话选定模型 (`inherit`) | **Tier 1 主入口**。单次触发 `run_workflow`，零中途轮询，最终汇总 `ticket_id`、权重与 Worktree 状态。 |
+| <img src="assets/pixel/argon-graviton.png" width="24" align="absmiddle" alt="" /> **决策门禁与权重 (Decision Gate)** | `decision_client.py` | System1 / 本地 Laya / OpenAI | 执行三道检查点评分与双模态 `DecisionWeights` 归一化，Windows DPAPI 加密存储凭据。 |
+| <img src="assets/pixel/cry-turbo.png" width="24" align="absmiddle" alt="" /> **工单树看板 (MCP App)** | `open_lead_board` | Python 3.13 Stdlib MCP | 提供 `Op Lead With Us` (`global`) 与 `Op Lead Tree` (`aux_pane`) 面板，零上下文泄露。 |
+| <img src="assets/pixel/role-researcher.png" width="24" align="absmiddle" alt="" /> **调研员 (Researcher)** | `agy-researcher` | **Gemini Flash** (`flash`) | 只读代码库探索、接口定位与并行拆包规划，严禁修改任何文件或递归调用 `run_workflow`。 |
+| <img src="assets/pixel/role-implementer.png" width="24" align="absmiddle" alt="" /> **实现员 (Implementer)** | `agy-implementer` | **Gemini Flash** (`flash`) | 在指定工作区 / Worktree 与作用域内执行编辑、测试及 Scheme A 静默自修。 |
+| <img src="assets/pixel/role-reviewer.png" width="24" align="absmiddle" alt="" /> **审计员 (Reviewer)** | `agy-reviewer` | **Gemini Flash** (`flash`) | 离线默认或不确定带触发的只读独立终审，验证 Diff、结构校验与验收条件。 |
 
 ---
 
@@ -139,31 +120,36 @@
 
 #### 1. 全局安装
 
-克隆本仓库并安装至本地 Antigravity 用户配置目录：
+克隆本仓库并安装至本地 Antigravity 插件目录 `~/.gemini/config/plugins/op-lead-with-us-native`（安装时自动探测本机 Antigravity 内置 Python 3.13 路径写入 `mcp_config.json`）：
 
 ```powershell
 git clone https://github.com/planelin/op-lead-with-us.git
 cd op-lead-with-us
-npm run install:global
+python scripts/install-local.py
 ```
 
-*(如需卸载：`npm run uninstall:global`)*
+* **Windows 快捷安装 / 卸载**：直接双击仓库根目录下的 [`install.bat`](./install.bat) 即可一键安装；双击 [`uninstall.bat`](./uninstall.bat) 或运行 `python scripts/install-local.py --uninstall` 即可卸载。
 
-* **Windows 快捷安装**：直接双击运行仓库根目录下的 [`install.bat`](./install.bat)（需 Node.js 18+）；运行 `install.bat uninstall` 即可一键卸载。
+#### 2. 配置决策模型与权重（可选，离线可用）
 
-**Ubuntu/WSL 工作区**：插件跟随运行 Agent 后端的宿主机。如果 Antigravity 进程带
-`--wsl-distro=Ubuntu`，即使 GUI 在 Windows 上，仍须在同一 WSL distro 执行
-`npm run install:global`；Windows 的全局配置对 Ubuntu 后端不可见。
-详细的宿主判断和验收步骤见 [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md)。
+双击根目录 [`configure-decision.bat`](./configure-decision.bat) 打开中文交互菜单（`[1]` 配置 System1 / 本地 Laya / OpenAI 兼容端点，`[2]` 连通性诊断，`[5]` 配置三项权重与总联动），或使用命令行快捷设置：
 
-#### 2. 在 Antigravity 中使用
+```powershell
+.\configure-decision.bat --url http://127.0.0.1:8000/v1/decisions --protocol systemone --model jev-latest --mode gate --diagnose
+.\configure-decision.bat --review-waiver-weight 0.78 --topology-weight 0.50 --auto-close-weight 0.80
+```
 
-1. 启动或重启 **Antigravity 2.0+**。
-2. 新建对话（`Ctrl+N`）。
-3. 根据你的场景选择对应 Agent：
-   * <img src="assets/pixel/mascot.png" width="20" align="absmiddle" alt="" /> 选择 **`op-lead-with-us`（遗忘模式）**：开启 Super-Agent 多工单自治工作流，轻松托管复杂与多线任务。
-   * <img src="assets/pixel/argon-graviton.png" width="20" align="absmiddle" alt="" /> 选择 **`argon-for-gdnsyt`（更多模式）**：手动将主会话模型切换为 **Claude Opus 5.5** 或 **Argon**，享受高阶规划 + Flash 苦力的省配额体验。
-   * <img src="assets/pixel/cry-turbo.png" width="20" align="absmiddle" alt="" /> *(可选)* 选择 **`op-lead-with-cry`（快模式）**：手动选择 **Gemini Flash** 进行多路并发平推。
+#### 3. 在 Antigravity 中使用 & 本地校验
+
+1. 重启 **Antigravity 2.x**（或在 MCP Servers 设置中刷新插件）。
+2. 新建对话，在 **Agents** 下拉选择 **`op-lead-with-us`**，直接提出工程开发或资产生成任务。
+3. 在左侧主边栏点击 **`Op Lead With Us`** 或右侧 `+` 面板打开 **`Op Lead Tree`** 查看工单执行树、调节权重或一键合入 Worktree。
+4. 运行本地合规校验与全量单元测试：
+
+```powershell
+python scripts/validate.py
+python -m unittest discover -s tests -v
+```
 
 ---
 ---
@@ -172,65 +158,56 @@ npm run install:global
 
 ## 🌐 English
 
-**`op-lead-with-us`** is a next-generation multi-agent orchestration plugin built for **Google Antigravity (`agy`)**.
-
-In the latest release, the plugin introduces a brand-new **Super-Agent Architecture** under **Oblivion Mode (`op-lead-with-us`)** to eliminate human attention bottlenecks, while preserving the battle-tested **More Mode (`argon-for-gdnsyt`)** for classic main-agent-to-subagent quota optimization.
+**`op-lead-with-us-native` (`0.7.0`)** is a **100% ToS-compliant** multi-agent orchestrator built strictly on official **Google Antigravity 2.x** surfaces (`run_workflow`, plugin `rules/`/`skills/`/`agents/`, and the official MCP App UI) with **zero external Python dependencies**.
 
 ---
 
-### <img src="assets/pixel/icon-modes.png" width="24" align="absmiddle" alt="" /> Core Modes
+### <img src="assets/pixel/icon-modes.png" width="24" align="absmiddle" alt="" /> Core Architecture
 
-#### 1. `op-lead-with-us` (Oblivion Mode) — Super-Agent Architecture
+#### 1. `op-lead-with-us` (Tier 1 Global Router) & Ticket Execution Tree (`T-xxxx`)
 
 <img src="assets/pixel/mascot.png" width="96" align="right" alt="Oblivion Mode Mascot" />
 
-> **Philosophy: Free up human attention. Forget session juggling and context pollution.**
+> **Philosophy: Zero mid-flight noise (Scheme A), safe auto-close (Scheme B), and on-demand Git Worktree isolation.**
 
-Traditional single-session agents often suffer from context rot (when the main agent tries to write code and read long test logs itself) and human attention overload (tracking multiple tabs). **Oblivion Mode (`op-lead-with-us`)** implements an autonomous **Router + Ticket State Machine + Isolated Lead Spawning** architecture:
-
-* **Attention-Decoupled Global Router**: The primary session acts strictly as an intake router and ticket coordinator. Direct code-editing tools are structurally stripped from the router so your main window stays responsive at all times.
-* **Durable Ticket Lifecycle & Slot Control**: Tasks are tracked as stateful tickets (`queued`, `working`, `waiting_human`, `completed`, `blocked`) with strict active-slot concurrency caps (`maxActive`) and priority human-reply slots.
-* **Cross-Session Spawning & Model Guardrails**: Each active ticket spawns or resumes an isolated top-level Lead session (enforced with runtime **Flash** model verification and circuit-breaker protection so high-tier quotas are never accidentally drained in the background), which in turn orchestrates `agy-researcher`, `agy-implementer`, and `agy-reviewer` via `invoke_subagent`.
+* **Single-Turn Global Router**: Selecting **`op-lead-with-us`** routes engineering deliverables straight into `run_workflow(ScriptPath="workflows/orchestrate.py")` with silent card progress and one crisp final report.
+* **Ticket Execution Tree (`T-xxxx`)**: Every workflow allocates or continues a `T-0001` Lead root in `<workspace>/.argon/tickets.json` (`Router -> Lead -> Researcher / Implementer / Self-Repair / Gate / Reviewer [active|waived] / Close`) and registers the project in global `projects.json`.
+* **Adaptive Git Worktree**: Single-file tweaks edit directly for speed; multi-file, complex, `pipeline`, or `parallel_branch` Git tasks isolate into `.argon/worktrees/T-xxxx` (`argon/T-xxxx`), mirror uncommitted dirty files, auto-merge back atomically on `done` without ever running `git commit`/`push`, or stay preserved in `review` on conflict/sign-off.
 
 <br clear="right" />
 
-#### 2. `argon-for-gdnsyt` (More Mode) — Classic Main + Subagents Architecture
+#### 2. Decision Model & Dual-Mode `DecisionWeights`
 
-<img src="assets/pixel/argon-graviton.png" width="96" align="right" alt="Argon Graviton Surge Logo" />
+<img src="assets/pixel/argon-graviton.png" width="96" align="right" alt="Decision Model & Weights Logo" />
 
-> **Philosophy: Save your frontier model quota so there is *more* of it for you to use.**
-
-**`argon-for-gdnsyt`** preserves the classic `op-lead-with-us` workflow. When you want a frontier reasoning model (**Claude Opus 5.5** or **Gemini Argon / Pro**) to lead architecture and acceptance in a single session without burning quota on file searches and test loops:
-
-* **Frontier Brain, Flash Muscle**: The main model (`model: inherit`) frames requirements, dispatches task packets, and makes acceptance decisions. Heavy repository exploration, code edits, and unit test repairs are offloaded to **Gemini Flash** subagents via native `invoke_subagent`.
-* **Two-Phase Planning (`PLAN_ONLY`)**: Generate a compact `PLAN.md` (≤120 lines) with Opus/Argon and stop immediately, then execute the plan in a fresh Flash conversation.
-* **Compressed Evidence**: Worker reports are strictly capped (researcher ≤40 / implementer ≤50 / reviewer ≤60 lines) to keep the main context crystal clear.
+* **Offline Binary `{0, 1}` vs Online Continuous `[0.00, 1.00]`**: Without an active Decision Model (`mode == "off"`), `review_waiver_weight`, `topology_weight`, and `auto_close_weight` snap deterministically to `{0, 1}`. With System1 (`emrank.tech`), local **Laya**, or an OpenAI-compatible endpoint online, all three weights (plus `linked_master` / `master_weight`) smoothly modulate waiver thresholds, topology scaling, and auto-close risk bounds while strictly respecting hard local verification invariants.
 
 <br clear="right" />
 
-#### 3. `op-lead-with-cry` (Turbo / Wasteful Mode)
+#### 3. Official MCP App Panel (`Op Lead With Us` / `Op Lead Tree`)
 
-<img src="assets/pixel/cry-turbo.png" width="84" align="right" alt="Turbo Cry Mode Logo" />
+<img src="assets/pixel/cry-turbo.png" width="84" align="right" alt="MCP App Board Icon" />
 
-* **Overview**: A secondary, speed-first mode where the user manually selects **Gemini Flash** as the main model and opts into higher worker consumption for aggressive concurrent fan-out across independent tasks.
+* Built with pure Python 3.13 stdlib (`mcp/board_server.py`) and a self-contained single-file UI (`mcp/ui/app.html`) compliant with `default-src 'none'` CSP. Open **Op Lead With Us** from the left sidebar (`global`) or **Op Lead Tree** from the right `+` pane (`aux_pane`) to switch projects, inspect execution trees and 4D scores, open changed files in the side pane, tune weights live, and one-click merge or discard pending Worktrees.
 
 <br clear="right" />
 
 ---
 
-### <img src="assets/pixel/icon-quickstart.png" width="24" align="absmiddle" alt="" /> Installation & Usage
+### <img src="assets/pixel/icon-quickstart.png" width="24" align="absmiddle" alt="" /> Installation & Verification
 
 ```powershell
 git clone https://github.com/planelin/op-lead-with-us.git
 cd op-lead-with-us
-npm run install:global
+python scripts/install-local.py
 ```
 
-* **Windows Users**: Double-click [`install.bat`](./install.bat) to install globally, or run `install.bat uninstall` to remove.
-* **Ubuntu/WSL**: When the Agent backend runs in Ubuntu, run `npm run stage` or
-  `npm run install:global` from `/mnt/n/<repo>` (or the actual Linux-mounted project path).
-  A Windows GUI with `--wsl-distro=Ubuntu` still uses the Ubuntu plugin configuration.
-* **In Antigravity**: Start a new conversation (`Ctrl+N`), pick **`op-lead-with-us`** (Oblivion Mode / Super-Agent) or **`argon-for-gdnsyt`** (More Mode / Classic Quota Saver), and send your request.
+* **Windows Batch Helpers**: Double-click [`install.bat`](./install.bat) to install globally, [`uninstall.bat`](./uninstall.bat) to uninstall, or [`configure-decision.bat`](./configure-decision.bat) to configure Decision Model endpoints & weights.
+* **Validate & Test**:
+  ```powershell
+  python scripts/validate.py
+  python -m unittest discover -s tests -v
+  ```
 
 ---
 

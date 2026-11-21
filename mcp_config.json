@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "board": {
+      "command": "python",
+      "args": ["${PLUGIN_ROOT}/mcp/board_server.py"]
+    }
+  }
+}

@@ -1,9 +1,13 @@
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
 node_modules/
 work/
 outputs/
 .agents/
-
 .argon/
-
-backup.7z
-op-lead-with-us.7z
+*.7z
+.DS_Store
+*:Zone.Identifier
